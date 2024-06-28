@@ -8,3 +8,5 @@ start app: npm run dev
 
 PGTime:
 27-06-2024 22-02 finished the second lesson https://www.youtube.com/watch?v=v3pp0K8x2eY&list=PL-FhWbGlJPfaCm9Qx7G9wQqtt2_yBT92V&index=2
+
+прочитать про v-bind, v-if и v-for
