@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.1.4",
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
     "echarts": "^5.5.1",
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
     "vue": "^3.4.29",
     "vue-echarts": "^6.7.3"
   },
