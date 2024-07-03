@@ -20,9 +20,7 @@ client.connect()
     .then(() => console.log('\n--------------------\nDEBUG: Connected to the database on port: ', client.port))
     .catch(err => console.error('Connection error', err.stack));
 
-if (!Array.isArray(getCandle.rows)) {
-    throw new Error('getCandle.rows is not an array');
-}
+
 
 app.get('/candlesstick', async (req, res) => {
     try {
@@ -34,6 +32,18 @@ app.get('/candlesstick', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+
+app.get('/fractals-from-db', async (req, res) => {
+    try {
+        const fractalsData = await client.query('SELECT time, extreme, log_message FROM fractals');
+        console.log('DEBUG.server.mjs_40: result: ', fractalsData.rows);
+        res.send(fractalsData.rows);
+    } catch(err) {
+        console.error('ERROR: in server.mjs: ', err);
+        res.status(500).send('Internal Server Error');
+    }
+})
 
 const port = 3000;
 app.listen(port, () => {

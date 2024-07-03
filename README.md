@@ -5,6 +5,7 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
 
 start app: npm run dev
+start server: node server.mjs
 
 PGTime:
 27-06-2024 22-02 finished the second lesson https://www.youtube.com/watch?v=v3pp0K8x2eY&list=PL-FhWbGlJPfaCm9Qx7G9wQqtt2_yBT92V&index=7

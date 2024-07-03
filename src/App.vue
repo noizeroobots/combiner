@@ -7,10 +7,10 @@ import CandlestickChart from "./components/CandlestickChart.vue";
 
 <template>
   <TheHeader />
-
+  <CandlestickChart />
   <main class="flex flex-grow flex-col">
 
   </main>
-  <CandlestickChart />
+
   <TheNav />
 </template>
