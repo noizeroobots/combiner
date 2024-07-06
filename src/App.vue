@@ -12,5 +12,5 @@ import CandlestickChart from "./components/CandlestickChart.vue";
 
   </main>
 
-  <TheNav />
+
 </template>

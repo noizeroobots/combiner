@@ -6,6 +6,7 @@
 import { defineComponent, setBlockTracking } from "vue";
 import * as echarts from "echarts";
 
+
 export default defineComponent({
   mounted() {
     this.fetchData();
@@ -36,10 +37,9 @@ export default defineComponent({
           item.low,
           item.high,
         ]);
-
         this.drawChart();
       } catch (error) {
-        console.error("ERROR: Error fetching data.", error);
+        //console.error("ERROR: Error fetching data.", error);
       }
     },
     async fetchFractals() {
@@ -55,9 +55,15 @@ export default defineComponent({
         this.fractals = data;
         this.drawChart();
       } catch (error) {
-        console.error("ERROR: Error fetching fractals.", error);
+        //console.error("ERROR: Error fetching fractals.", error);
       }
     },
+    addHoursToDate(dateStr, hours) {
+      const date = new Date(dateStr);
+      date.setHours(date.getHours() + hours);
+      return date;
+    },
+
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
         return;
@@ -80,6 +86,7 @@ export default defineComponent({
               ? fractal.extreme - 10
               : fractal.extreme + 10,
           ],
+
           value: fractal.log_message,
           itemStyle: {
             color: fractal.log_message === "Local low" ? "red" : "green",
@@ -92,6 +99,74 @@ export default defineComponent({
           },
         }));
 
+      // Формирование данных для линий над фракталами
+      const markShortLines = this.fractals
+        .filter(
+          (fractal) =>
+            fractal.log_message === "Local low" ||
+            fractal.log_message === "Local high"
+        )
+        .map((fractal) => ({
+          name: fractal.log_message,
+          yAxis: fractal.extreme,
+          lineStyle: {
+            color: fractal.log_message === "Local low" ? "red" : "green",
+            width: 0.9,
+            type: "solid",
+          },
+
+          label: {
+            show: true, // Скрыть метки для упрощения
+            position: 'start'
+          },
+          data: [
+            {
+              coord: [fractal.time, fractal.extreme],
+            },
+            {
+              coord: [fractal.time + 4 * 3600 * 1000, fractal.extreme], // Добавить 4 часа в миллисекундах
+            },
+          ],
+        }));
+
+
+
+      // Формирование данных для коротких линий
+      const linesData = this.fractals
+        .filter(
+          (fractal) =>
+            fractal.log_message === "Local low" ||
+            fractal.log_message === "Local high"
+        )
+        .map((fractal) => ({
+
+          name: fractal.log_message,
+          type: "line",
+          data: [
+            [fractal.time, fractal.extreme], // Начальная точка линии
+            //[new Date(fractal.time).getTime() + 4 * 3600 * 1000, fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
+           //["2024-06-20T09:00:00Z", fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
+            [this.addHoursToDate(fractal.time, 4).toISOString().replace(".000", ""), fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
+          ],
+          lineStyle: {
+            color: fractal.log_message === "Local low" ? "red" : "green",
+            width: 1,
+            type: "solid" // Тип линии (например, сплошная)
+          },
+          markLine: {
+            symbol: ['none', 'none'], // Убрать стрелки на концах линий
+            label: {
+              show: false // Скрыть метки
+            }
+          }
+        }));
+      console.log('Data for short lines formed_1:', linesData[2].data[0]);
+      console.log('Data for short lines formed_2:', linesData[1].data[1]);
+
+
+
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const option = {
         //backgroundColor: '#f5f5f5',
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -103,7 +178,6 @@ export default defineComponent({
           axisPointer: {
             type: "cross",
           },
-
         },
         toolbox: {
           feature: {
@@ -133,27 +207,27 @@ export default defineComponent({
             show: true,
             lineStyle: {
               color: "black", // Цвет сетки оси X
-              opacity: 0.05
+              opacity: 0.05,
             },
           },
           axisLabel: {
             formatter: function (value) {
-                const date = new Date(value);
-                const hours = ('0' + date.getHours()).slice(-2);
-                const minutes = ('0' + date.getMinutes()).slice(-2);
-                return `${hours}:${minutes}`;
-            }
-        }
+              const date = new Date(value);
+              const hours = ("0" + date.getHours()).slice(-2);
+              const minutes = ("0" + date.getMinutes()).slice(-2);
+              return `${hours}:${minutes}`;
+            },
+          },
         },
         yAxis: {
           type: "value",
           name: "RUB",
           scale: true,
-          position: 'left',
+          position: "right",
           axisLabel: {
-            formatter: '{value}', // форматирование значений
-            inside: false         // чтобы оси не накладывались на график
-        },
+            formatter: "{value}", // форматирование значений
+            inside: false, // чтобы оси не накладывались на график
+          },
           min: (value) =>
             Math.min(...this.values.flat()) -
             Math.min(...this.values.flat()) * 0.1,
@@ -174,7 +248,7 @@ export default defineComponent({
             show: true,
             lineStyle: {
               color: "black", // Цвет сетки оси X
-              opacity: 0.05
+              opacity: 0.05,
             },
           },
         },
@@ -191,48 +265,53 @@ export default defineComponent({
             markPoint: {
               data: markPoints,
             },
+            markLine: {
+               //data: markShortLines,
+            }
           },
+          ...linesData// Добавляем линии к графику
         ],
+
         dataZoom: [
           {
             type: "inside",
             xAxisIndex: [0],
             start: 0, //Start и End: Определяют начальный и конечный процент масштабирования.
             end: 100,
-            show: false //Show: Определяет, будет ли отображаться контроллер масштабирования.
+            show: false, //Show: Определяет, будет ли отображаться контроллер масштабирования.
           },
           {
             xAxisIndex: [0],
-            start: 0,//Start и End: Определяют начальный и конечный процент масштабирования.
+            start: 0, //Start и End: Определяют начальный и конечный процент масштабирования.
             end: 100,
-            show: false  //Show: Определяет, будет ли отображаться контроллер масштабирования.
+            show: false, //Show: Определяет, будет ли отображаться контроллер масштабирования.
           },
           {
             type: "inside",
             yAxisIndex: [0],
-            start: 0,//Start и End: Определяют начальный и конечный процент масштабирования.
+            start: 0, //Start и End: Определяют начальный и конечный процент масштабирования.
             end: 100,
-            show: false  //Show: Определяет, будет ли отображаться контроллер масштабирования.
+            show: false, //Show: Определяет, будет ли отображаться контроллер масштабирования.
           },
           {
             yAxisIndex: [0],
-            start: 0,  //Start и End: Определяют начальный и конечный процент масштабирования.
+            start: 0, //Start и End: Определяют начальный и конечный процент масштабирования.
             end: 100,
-            show: false  //Show: Определяет, будет ли отображаться контроллер масштабирования.
+            show: false, //Show: Определяет, будет ли отображаться контроллер масштабирования.
           },
           {
             type: "slider",
             xAxisIndex: 0,
             start: 0,
             end: 100,
-            show: false  //Show: Определяет, будет ли отображаться контроллер масштабирования.
+            show: false, //Show: Определяет, будет ли отображаться контроллер масштабирования.
           },
           {
             type: "slider",
             yAxisIndex: 0,
             start: 0,
             end: 100,
-            show: false //Show: Определяет, будет ли отображаться контроллер масштабирования.
+            show: false, //Show: Определяет, будет ли отображаться контроллер масштабирования.
           },
         ],
       };
