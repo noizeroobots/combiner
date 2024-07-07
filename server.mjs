@@ -56,7 +56,8 @@ app.get("/fractals-from-db", async (req, res) => {
 app.get("/fvg-from-db", async (req, res) => {
   try {
     const fvgData = await client.query(
-      "SELECT time, fvg_high, fvg_low FROM fvg LIMIT 25"
+      "SELECT time, fvg_high, fvg_low FROM fvg"
+      //"SELECT time, fvg_high, fvg_low FROM fvg LIMIT 25"
     );
     console.log('DEBUG.server.mjs_40: result: ', fvgData.rows);
     res.send(fvgData.rows);

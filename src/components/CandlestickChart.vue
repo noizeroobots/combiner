@@ -1,5 +1,5 @@
 <template>
-  <div id="candlestick-chart" style="width: 100%; height: 600px"></div>
+  <div id="candlestick-chart" style="width: 100%; height: 100%"></div>
 </template>
 
 <script>
@@ -11,12 +11,14 @@ export default defineComponent({
   mounted() {
     this.fetchData();
     this.fetchFractals();
+    this.fetchFvgs();
   },
   data() {
     return {
       categoryData: [],
       values: [],
       fractals: [],
+      fvgs: []
     };
   },
   methods: {
@@ -42,6 +44,7 @@ export default defineComponent({
         //console.error("ERROR: Error fetching data.", error);
       }
     },
+//---------------------------------------------------------------------------------------------------------------------------------
     async fetchFractals() {
       try {
         const response = await fetch("http://localhost:3000/fractals-from-db");
@@ -58,12 +61,32 @@ export default defineComponent({
         //console.error("ERROR: Error fetching fractals.", error);
       }
     },
+//---------------------------------------------------------------------------------------------------------------------------------
+    async fetchFvgs() {
+      try {
+        const response = await fetch('http://localhost:3000/fvg-from-db');
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("FVG data is not an array");
+          return;
+        }
+
+        this.fvgs = data;
+        this.drawChart();
+      } catch (error) {
+        console.log('ERROR: Какая-то ошибка с достованием FVG:', error);
+      }
+    },
+
+//---------------------------------------------------------------------------------------------------------------------------------
     addHoursToDate(dateStr, hours) {
       const date = new Date(dateStr);
       date.setHours(date.getHours() + hours);
       return date;
     },
 
+//---------------------------------------------------------------------------------------------------------------------------------
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
         return;
@@ -73,13 +96,8 @@ export default defineComponent({
       const myChart = echarts.init(chartDom);
 
       // Формирование данных для фракталов
-      const markPoints = this.fractals
-        .filter(
-          (fractal) =>
-            fractal.log_message === "Local low" ||
-            fractal.log_message === "Local high"
-        )
-        .map((fractal) => ({
+      const markPoints = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
+      .map((fractal) => ({
           coord: [
             fractal.time,
             fractal.log_message === "Local low"
@@ -90,6 +108,7 @@ export default defineComponent({
           value: fractal.log_message,
           itemStyle: {
             color: fractal.log_message === "Local low" ? "red" : "green",
+            opacity: 0.7,
           },
           symbol: "triangle",
           symbolRotate: fractal.log_message === "Local low" ? 0 : 180,
@@ -99,13 +118,28 @@ export default defineComponent({
           },
         }));
 
+//---------------------------------------------------------------------------------------------------------------------------------
+        // Формирование данных для FVG
+       const markAreas = this.fvgs.map((fvgs) => ({
+        name: 'OZON',
+        data: [
+              [
+                {
+                  xAxis: fvgs.time,
+                  yAxis: fvgs.fvg_low
+                },
+                {
+                  xAxis: this.addHoursToDate(fvgs.time, 408).toISOString().replace(".000", ""),
+                  yAxis: fvgs.fvg_high
+                }
+              ]
+            ]
+          }));
+        console.log('DEBUG: Data for FVGs formed! Размер массива markAreas - ', markAreas.length);
+        console.log('DEBUG: Data for FVGs formed! Размер массива this.fvgs -  ', this.fvgs.length);
+//---------------------------------------------------------------------------------------------------------------------------------
       // Формирование данных для линий над фракталами
-      const markShortLines = this.fractals
-        .filter(
-          (fractal) =>
-            fractal.log_message === "Local low" ||
-            fractal.log_message === "Local high"
-        )
+      const markShortLines = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
         .map((fractal) => ({
           name: fractal.log_message,
           yAxis: fractal.extreme,
@@ -128,25 +162,15 @@ export default defineComponent({
             },
           ],
         }));
-
-
-
+//---------------------------------------------------------------------------------------------------------------------------------
       // Формирование данных для коротких линий
-      const linesData = this.fractals
-        .filter(
-          (fractal) =>
-            fractal.log_message === "Local low" ||
-            fractal.log_message === "Local high"
-        )
+      const linesData = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
         .map((fractal) => ({
-
           name: fractal.log_message,
           type: "line",
           data: [
             [fractal.time, fractal.extreme], // Начальная точка линии
-            //[new Date(fractal.time).getTime() + 4 * 3600 * 1000, fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
-           //["2024-06-20T09:00:00Z", fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
-            [this.addHoursToDate(fractal.time, 4).toISOString().replace(".000", ""), fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
+            [this.addHoursToDate(fractal.time, 5).toISOString().replace(".000", ""), fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
           ],
           lineStyle: {
             color: fractal.log_message === "Local low" ? "red" : "green",
@@ -160,13 +184,10 @@ export default defineComponent({
             }
           }
         }));
-      console.log('Data for short lines formed_1:', linesData[2].data[0]);
-      console.log('Data for short lines formed_2:', linesData[1].data[1]);
+      console.log('DEBUG: Data for short lines formed! ', linesData[0].data[0]);
+      console.log('DEBUG: Data for short lines formed! Размер массива - ', linesData.length);
 
-
-
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const option = {
         //backgroundColor: '#f5f5f5',
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -267,9 +288,24 @@ export default defineComponent({
             },
             markLine: {
                //data: markShortLines,
+            },
+            markArea: {
+              name: 'FVG',
+              label: {
+                show: true,
+                color: 'black', // Черный цвет текста метки
+                fontSize: 12, // Размер шрифта 12 пикселей
+                fontStyle: 'bold' // Жирный стиль шрифта
+              },
+              itemStyle: {
+                color: "rgba(255, 255, 0, 0.2)", // Полупрозрачный жёлтый цвет
+                borderColor: "black", // Чёрный цвет границы
+                borderWidth: 0.3 // Ширина границы
+              },
+              data: markAreas.map(area => area.data[0])
             }
           },
-          ...linesData// Добавляем линии к графику
+          ...linesData,   // Добавляем линии к графику
         ],
 
         dataZoom: [
