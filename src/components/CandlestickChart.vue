@@ -1,5 +1,5 @@
 <template>
-  <div id="candlestick-chart" style="width: 100%; height: 100%"></div>
+  <div id="candlestick-chart" style="width: 100%; height: 700px"></div>
 </template>
 
 <script>
@@ -39,11 +39,38 @@ export default defineComponent({
           item.low,
           item.high,
         ]);
+
+// Функция для добавления новых данных
+function extendData(categoryData, values, numNewDataPoints) {
+      // Найти последнюю дату и время в текущем categoryData
+      var lastDate = new Date(categoryData[categoryData.length - 1]);
+
+      for (var i = 1; i <= numNewDataPoints; i++) {
+        // Увеличить дату на один час
+        var newDate = new Date(lastDate);
+        newDate.setHours(lastDate.getHours() + i);
+        // Преобразовать дату обратно в строку в нужном формате
+        var newDateString = newDate.toISOString();
+
+        // Добавить новую дату в categoryData
+        categoryData.push(newDateString);
+
+        // Добавить данные свечки [0, 0, 0, 0] в values
+        values.push([0, 0, 0, 0]);
+      }
+    }
+
+    // Пример: добавить 5 новых точек данных
+    extendData(this.categoryData, this.values, 250);
+
+
         this.drawChart();
       } catch (error) {
         //console.error("ERROR: Error fetching data.", error);
       }
     },
+
+
 //---------------------------------------------------------------------------------------------------------------------------------
     async fetchFractals() {
       try {
@@ -67,25 +94,15 @@ export default defineComponent({
         const response = await fetch('http://localhost:3000/fvg-from-db');
         const data = await response.json();
 
-        if (!Array.isArray(data)) {
-          console.error("FVG data is not an array");
-          return;
-        }
+        if (!Array.isArray(data)) { console.error("FVG data is not an array"); return;}
 
         this.fvgs = data;
         this.drawChart();
-      } catch (error) {
-        console.log('ERROR: Какая-то ошибка с достованием FVG:', error);
-      }
+      } catch (error) { console.log('ERROR: Какая-то ошибка с достованием FVG:', error);}
     },
 
 //---------------------------------------------------------------------------------------------------------------------------------
-    addHoursToDate(dateStr, hours) {
-      const date = new Date(dateStr);
-      date.setHours(date.getHours() + hours);
-      return date;
-    },
-
+    addHoursToDate(dateStr, hours) { const date = new Date(dateStr); date.setHours(date.getHours() + hours); return date; },
 //---------------------------------------------------------------------------------------------------------------------------------
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
@@ -129,7 +146,7 @@ export default defineComponent({
                   yAxis: fvgs.fvg_low
                 },
                 {
-                  xAxis: this.addHoursToDate(fvgs.time, 408).toISOString().replace(".000", ""),
+                  xAxis: fvgs.length,
                   yAxis: fvgs.fvg_high
                 }
               ]
@@ -137,6 +154,10 @@ export default defineComponent({
           }));
         console.log('DEBUG: Data for FVGs formed! Размер массива markAreas - ', markAreas.length);
         console.log('DEBUG: Data for FVGs formed! Размер массива this.fvgs -  ', this.fvgs.length);
+        console.log('DEBUG: Data for FVGs formed! Дата окончания FVG зоны0 -  ', this.fvgs[this.fvgs.length - 1].time);
+        console.log('DEBUG: Data for FVGs formed! Дата окончания FVG зоны1 -  ', this.addHoursToDate((this.fvgs[this.fvgs.length - 1].time), 24).toISOString().replace(".000", ""));
+
+
 //---------------------------------------------------------------------------------------------------------------------------------
       // Формирование данных для линий над фракталами
       const markShortLines = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
@@ -214,6 +235,7 @@ export default defineComponent({
           data: this.categoryData,
           name: "time",
           scale: true,
+          boundaryGap: [0, '100%'],
           axisLine: {
             lineStyle: {
               color: "black", // Цвет линии оси X
@@ -300,7 +322,7 @@ export default defineComponent({
               itemStyle: {
                 color: "rgba(255, 255, 0, 0.2)", // Полупрозрачный жёлтый цвет
                 borderColor: "black", // Чёрный цвет границы
-                borderWidth: 0.3 // Ширина границы
+                borderWidth: 0.9 // Ширина границы
               },
               data: markAreas.map(area => area.data[0])
             }

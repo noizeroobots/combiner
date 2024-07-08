@@ -29,7 +29,7 @@ client
 app.get("/candlesstick", async (req, res) => {
   try {
     const result = await client.query(
-      "SELECT time, open, close, low, high FROM candles WHERE is_complete = true"
+      "SELECT time, open, close, low, high FROM candles"
     );
     //console.log('DEBUG.server.mjs_34: result: ', result.rows);
     res.send(result.rows);
@@ -42,7 +42,7 @@ app.get("/candlesstick", async (req, res) => {
 app.get("/fractals-from-db", async (req, res) => {
   try {
     const fractalsData = await client.query(
-      "SELECT time, extreme, log_message FROM fractals "
+      "SELECT time, extreme, log_message FROM fractals"
       //"SELECT time, extreme, log_message FROM fractals WHERE id BETWEEN 55 AND 59"
     );
     //console.log('DEBUG.server.mjs_40: result: ', fractalsData.rows);
@@ -56,7 +56,7 @@ app.get("/fractals-from-db", async (req, res) => {
 app.get("/fvg-from-db", async (req, res) => {
   try {
     const fvgData = await client.query(
-      "SELECT time, fvg_high, fvg_low FROM fvg"
+      "SELECT time, fvg_high, fvg_low FROM fvg LIMIT 5"
       //"SELECT time, fvg_high, fvg_low FROM fvg LIMIT 25"
     );
     console.log('DEBUG.server.mjs_40: result: ', fvgData.rows);
