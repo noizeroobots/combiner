@@ -5,13 +5,13 @@
 <script>
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
-
+import {fetchFractals, fetchFvgs, fetchData} from "../api.js";
 
 export default defineComponent({
-  mounted() {
-    this.fetchData();
-    this.fetchFractals();
-    this.fetchFvgs();
+  async mounted() {
+    await fetchData(this);
+    await fetchFractals(this);
+    await fetchFvgs(this);
   },
   data() {
     return {
@@ -22,96 +22,23 @@ export default defineComponent({
     };
   },
   methods: {
-    async fetchData() {
-      try {
-        const response = await fetch("http://localhost:3000/candlesstick");
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("Data is not an array");
-          return;
-        }
-
-        this.categoryData = data.map((item) => item.time);
-        this.values = data.map((item) => [
-          item.open,
-          item.close,
-          item.low,
-          item.high,
-        ]);
-
-        // Функция для добавления новых данных
-        function extendData(categoryData, values, numNewDataPoints) {
-          // Найти последнюю дату и время в текущем categoryData
-          var lastDate = new Date(categoryData[categoryData.length - 1]);
-
-          for (var i = 1; i <= numNewDataPoints; i++) {
-            // Увеличить дату на один час
-            var newDate = new Date(lastDate);
-            newDate.setHours(lastDate.getHours() + i);
-            // Преобразовать дату обратно в строку в нужном формате
-            var newDateString = newDate.toISOString();
-
-            // Добавить новую дату в categoryData
-            categoryData.push(newDateString);
-
-            // Добавить данные свечки [0, 0, 0, 0] в values
-            values.push([0, 0, 0, 0]);
-          }
-        }
-
-        // Пример: добавить 250 новых точек данных
-        extendData(this.categoryData, this.values, 250);
-
-        this.drawChart();
-      } catch (error) {
-        console.error("ERROR: Error fetching data.", error);
-      }
-    },
-
-
-//---------------------------------------------------------------------------------------------------------------------------------
-    async fetchFractals() {
-      try {
-        const response = await fetch("http://localhost:3000/fractals-from-db");
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("Fractals data is not an array");
-          return;
-        }
-
-        this.fractals = data;
-        this.drawChart();
-      } catch (error) {
-        console.error("ERROR: Error fetching fractals.", error);
-      }
-    },
-//---------------------------------------------------------------------------------------------------------------------------------
-    async fetchFvgs() {
-      try {
-        const response = await fetch('http://localhost:3000/fvg-from-db');
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("FVG data is not an array");
-          return;
-        }
-
-        this.fvgs = data;
-        this.drawChart();
-      } catch (error) {
-        console.log('ERROR: Какая-то ошибка с достованием FVG:', error);
-      }
-    },
-
-//---------------------------------------------------------------------------------------------------------------------------------
     addHoursToDate(dateStr, hours) {
       const date = new Date(dateStr);
       date.setHours(date.getHours() + hours);
       return date;
     },
-//---------------------------------------------------------------------------------------------------------------------------------
+
+    extendData(categoryData, values, numNewDataPoints) {
+      var lastDate = new Date(categoryData[categoryData.length - 1]);
+      for (var i = 1; i <= numNewDataPoints; i++) {
+        var newDate = new Date(lastDate);
+        newDate.setHours(lastDate.getHours() + i);
+        var newDateString = newDate.toISOString();
+        categoryData.push(newDateString);
+        values.push([0, 0, 0, 0]);
+      }
+    },
+
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
         return;
@@ -382,7 +309,9 @@ export default defineComponent({
       };
 
       myChart.setOption(option);
-    },
+    }
+    ,
   },
-});
+})
+;
 </script>
