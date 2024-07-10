@@ -44,14 +44,12 @@ create table if not exists fvg
     log_message             varchar(250)
 );
 
-create table if not exists fvg
+create table if not exists fractals
 (
     id                      integer unique     not null primary key generated always as identity,
     ticker                  varchar(10),
     time                    varchar(50),
-    fvg_high                numeric(10, 3),
-    fvg_low                 numeric(10, 3),
-    fvg_middle              numeric(10, 3),
+    extreme                 numeric(10, 3),
     log_message             varchar(250)
 );
 
