@@ -1,4 +1,4 @@
-export async function fetchData(component) {
+export async function fetchCandles(component) {
     try {
         const response = await fetch("http://localhost:3000/candlesstick");
         const data = await response.json();
@@ -16,7 +16,7 @@ export async function fetchData(component) {
             item.high,
         ]);
 
-        component.extendData(component.categoryData, component.values, 250);
+        component.extendXAxisByEmptyCandles(component.categoryData, component.values, 250);
         component.drawChart();
     } catch (error) {
         console.error("ERROR: Error fetching data...\n\n", error);

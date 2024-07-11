@@ -5,11 +5,12 @@
 <script>
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
-import {fetchFractals, fetchFvgs, fetchData} from "../api.js";
+import {fetchFractals, fetchFvgs, fetchCandles} from "../api.js";
+import {getMarkPoints, getMarkAreas, getMarkShortLines, getLinesData} from "../utils/chartData.js";
 
 export default defineComponent({
   async mounted() {
-    await fetchData(this);
+    await fetchCandles(this);
     await fetchFractals(this);
     await fetchFvgs(this);
   },
@@ -22,13 +23,14 @@ export default defineComponent({
     };
   },
   methods: {
+
     addHoursToDate(dateStr, hours) {
       const date = new Date(dateStr);
       date.setHours(date.getHours() + hours);
       return date;
     },
 
-    extendData(categoryData, values, numNewDataPoints) {
+    extendXAxisByEmptyCandles(categoryData, values, numNewDataPoints) {
       var lastDate = new Date(categoryData[categoryData.length - 1]);
       for (var i = 1; i <= numNewDataPoints; i++) {
         var newDate = new Date(lastDate);
@@ -47,98 +49,15 @@ export default defineComponent({
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
 
-      // Формирование данных для фракталов
-      const markPoints = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
-          .map((fractal) => ({
-            coord: [
-              fractal.time,
-              fractal.log_message === "Local low"
-                  ? fractal.extreme - 10
-                  : fractal.extreme + 10,
-            ],
+      const markPoints = getMarkPoints(this.fractals);
+      const markAreas = getMarkAreas(this.fvgs);
+      const markShortLines = getMarkShortLines(this.fractals, this.addHoursToDate);
+      const linesData = getLinesData(this.fractals, this.addHoursToDate);
 
-            value: fractal.log_message,
-            itemStyle: {
-              color: fractal.log_message === "Local low" ? "red" : "green",
-              opacity: 0.7,
-            },
-            symbol: "triangle",
-            symbolRotate: fractal.log_message === "Local low" ? 0 : 180,
-            symbolSize: 8,
-            label: {
-              show: false,
-            },
-          }));
+      console.log('LinesData: ', linesData);
+      console.log('LinesData: ', linesData[2]);
 
-//---------------------------------------------------------------------------------------------------------------------------------
-
-      // Формирование данных для FVG
-      const markAreas = this.fvgs.map((fvgs) => ({
-        data: [
-          [
-            {
-              xAxis: fvgs.time,
-              yAxis: fvgs.fvg_low
-            },
-            {
-              xAxis: fvgs.end_time,
-              yAxis: fvgs.fvg_high
-            },
-          ]
-        ]
-      }));
-
-      console.log('Mark Areas:', markAreas); // Отладочное сообщение
-//---------------------------------------------------------------------------------------------------------------------------------
-      // Формирование данных для линий над фракталами
-      const markShortLines = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
-          .map((fractal) => ({
-            name: fractal.log_message,
-            yAxis: fractal.extreme,
-            lineStyle: {
-              color: fractal.log_message === "Local low" ? "red" : "green",
-              width: 0.9,
-              type: "solid",
-            },
-
-            label: {
-              show: true, // Скрыть метки для упрощения
-              position: 'start'
-            },
-            data: [
-              {
-                coord: [fractal.time, fractal.extreme],
-              },
-              {
-                coord: [fractal.time + 4 * 3600 * 1000, fractal.extreme], // Добавить 4 часа в миллисекундах
-              },
-            ],
-          }));
-//---------------------------------------------------------------------------------------------------------------------------------
-      // Формирование данных для коротких линий
-      const linesData = this.fractals.filter((fractal) => fractal.log_message === "Local low" || fractal.log_message === "Local high")
-          .map((fractal) => ({
-            name: fractal.log_message,
-            type: "line",
-            data: [
-              [fractal.time, fractal.extreme], // Начальная точка линии
-              [this.addHoursToDate(fractal.time, 5).toISOString().replace(".000", ""), fractal.extreme] // Конечная точка линии (добавить 4 часа в миллисекундах)
-            ],
-            lineStyle: {
-              color: fractal.log_message === "Local low" ? "red" : "green",
-              width: 1,
-              type: "solid" // Тип линии (например, сплошная)
-            },
-            markLine: {
-              symbol: ['none', 'none'], // Убрать стрелки на концах линий
-              label: {
-                show: false // Скрыть метки
-              }
-            }
-          }));
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const option = {
-        //backgroundColor: '#f5f5f5',
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
           {offset: 0, color: "#e8f9fb"}, // Цвет в начале
           {offset: 1, color: "#b6ecf3"}, // Цвет в конце
@@ -204,12 +123,16 @@ export default defineComponent({
             formatter: "{value}", // форматирование значений
             inside: false, // чтобы оси не накладывались на график
           },
-          min: (value) =>
-              Math.min(...this.values.flat()) -
-              Math.min(...this.values.flat()) * 0.1,
-          max: (value) =>
-              Math.max(...this.values.flat()) +
-              Math.max(...this.values.flat()) * 0.1,
+
+          // axisLabel: {
+          //   formatter: function (value) {
+          //     return value.toLocaleString('en-US'); // Используем английский формат чисел с точкой
+          //   }
+          // },
+           min: (value) => Math.min(...this.values.flat()) - Math.min(...this.values.flat()) * 0.1,
+           //max: (value) => Math.ceil(value / 1000) * 1000,
+           max: (value) => Math.max(...this.values.flat()) * 1.5,
+           //max: (value) => Math.max(...this.values.flat()) + Math.max(...this.values.flat()) * 0.1,
           axisLine: {
             lineStyle: {
               color: "black", // Цвет линии оси Y
@@ -309,9 +232,7 @@ export default defineComponent({
       };
 
       myChart.setOption(option);
-    }
-    ,
+    },
   },
-})
-;
+});
 </script>
