@@ -63,7 +63,7 @@ create table if not exists fractals
 ----------------------------------------------------------------------------------------------------------------
 
 PGTime:
-27-06-2024 22-02 finished the second lesson https://www.youtube.com/watch?v=v3pp0K8x2eY&list=PL-FhWbGlJPfaCm9Qx7G9wQqtt2_yBT92V&index=7
+27-06-2024 22-02 finished the second lesson https://www.youtube.com/watch?v=v3pp0K8x2eY&list=PL-FhWbGlJPfaCm9Qx7G9wQqtt2_yBT92V&index=9
 
 прочитать про v-bind, v-if и v-for
 
