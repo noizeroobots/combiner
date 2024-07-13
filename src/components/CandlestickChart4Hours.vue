@@ -6,13 +6,13 @@
 <script>
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
-import {fetchFractals, fetchFvgs, fetchCandles} from "../api.js";
+import {fetchFractals4Hour, fetchFvgs, fetchCandles4Hours} from "../api.js";
 import {getMarkPoints, getMarkAreas, getMarkShortLines, getLinesData,} from "../utils/chartData.js";
 
 export default defineComponent({
   async mounted() {
-    await fetchCandles(this);
-    await fetchFractals(this);
+    await fetchCandles4Hours(this);
+    await fetchFractals4Hour(this);
     await fetchFvgs(this);
   },
   props: {
