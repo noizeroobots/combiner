@@ -38,11 +38,22 @@ app.get("/candlesstick", async (req, res) => {
     }
 });
 
+app.get("/tickers", async (req, res) => {
+    try {
+        const result = await client.query("SELECT DISTINCT ticker FROM candles");
+        console.log("DEBUG: Кол-во тикеров из БД - ", result);
+        res.send(result.rows);
+    } catch (err) {
+        console.error("ERROR: in server.mjs: ", err);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
 app.get("/candlesstick-4hours", async (req, res) => {
     try {
         const result = await client.query(
-            "SELECT time, open, close, low, high FROM candles4hour order by time"
-        );
+            "SELECT time, open, close, low, high FROM candles4hour order by time");
+        console.log("DEBUG: Кол-во тикеров из БД - ", result);
         res.send(result.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
@@ -79,12 +90,9 @@ app.get("/fractals-from-db", async (req, res) => {
 });
 
 app.get("/fvg-from-db", async (req, res) => {
-    const limitFvg = req.query.limitFvg || 5;
     try {
         const fvgData = await client.query(
-            "SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT $1", [limitFvg]
-            //"SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT 5"
-            //"SELECT time, fvg_high, fvg_low FROM fvg LIMIT 25"
+            "SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT 5"
         );
          console.log('DEBUG: fvgData: ', fvgData.rows);
         res.send(fvgData.rows);
@@ -92,18 +100,6 @@ app.get("/fvg-from-db", async (req, res) => {
         console.error("ERROR: in server.mjs: ", err);
         res.status(500).send("Internal Server Error");
     }
-    // try {
-    //     const fvgData = await client.query(
-    //         "SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT $1", [limitFvg]
-    //         //"SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT 5"
-    //         //"SELECT time, fvg_high, fvg_low FROM fvg LIMIT 25"
-    //     );
-    //      console.log('DEBUG: fvgData: ', fvgData.rows);
-    //     res.send(fvgData.rows);
-    // } catch (err) {
-    //     console.error("ERROR: in server.mjs: ", err);
-    //     res.status(500).send("Internal Server Error");
-    // }
 });
 
 const port = 3000;

@@ -28,12 +28,42 @@ export async function fetchCandles(component) {
     }
 }
 
+export async function fetchTickers(component) {
+    try {
+        const response = await fetch("http://localhost:3000/tickers");
+
+        // Логируем статус и текст ответа
+        console.log("DEBUG: Response Status:", response.status);
+        const text = await response.text();
+        console.log("DEBUG: Response Text:", text);
+
+        // Парсим JSON из текста
+        const data = JSON.parse(text);
+
+        console.log("DEBUG: Кол-во ticker из БД - ", data.length);
+
+        if (data.length === 0) {
+            console.error("ERROR: Предоставлена пустая база данных...");
+        }
+
+        if (!Array.isArray(data)) {
+            console.error("Data is not an array");
+            return [];
+        }
+
+        // Предполагая, что каждый элемент массива data имеет свойство ticker
+        return data.map((item) => item.ticker);
+    } catch (error) {
+        console.error("ERROR: Error fetching tickers...\n\n", error);
+        return [];
+    }
+}
 
 export async function fetchCandles4Hours(component) {
     try {
         const response = await fetch("http://localhost:3000/candlesstick-4hours");
         const data = await response.json();
-        console.log("DEBUG: Кол-во свечек из БД - ", data.length);
+        console.log("DEBUG: Кол-во свечек 4H из БД - ", data.length);
 
         if(data.length === 0 ){
             console.error("ERROR: Предоставлена пустая база данных...");
@@ -94,7 +124,7 @@ export async function fetchFractals4Hour(component) {
 
 export async function fetchFvgs(component, limitFvg) {
     try {
-        const response = await fetch('http://localhost:3000/fvg-from-db?limit=${limit}');
+        const response = await fetch('http://localhost:3000/fvg-from-db');
         const data = await response.json();
 
         if (!Array.isArray(data)) {
