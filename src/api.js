@@ -1,6 +1,9 @@
-export async function fetchCandles(component) {
+export async function fetchCandles(component, ticker) {
+    console.log("DEBUG: Наименование тикера - ", ticker);
+    const url = `http://localhost:3000/candlesstick?ticker=${ticker}`;
+    console.log("DEBUG: URL запроса - ", url);
     try {
-        const response = await fetch("http://localhost:3000/candlesstick");
+        const response = await fetch(`http://localhost:3000/candlesstick?ticker=${ticker}`);
         const data = await response.json();
         console.log("DEBUG: Кол-во свечек из БД - ", data.length);
 
@@ -59,11 +62,14 @@ export async function fetchTickers(component) {
     }
 }
 
-export async function fetchCandles4Hours(component) {
+export async function fetchCandles4Hours(component, ticker) {
+
+    console.log("DEBUG: [candlesstick-4hours] Наименование тикера - ", ticker);
+    const url = `http://localhost:3000/candlesstick-4hours?ticker=${ticker}`;
+    console.log("DEBUG: [candlesstick-4hours] URL запроса - ", url);
     try {
-        const response = await fetch("http://localhost:3000/candlesstick-4hours");
+        const response = await fetch(`http://localhost:3000/candlesstick-4hours?ticker=${ticker}`);
         const data = await response.json();
-        console.log("DEBUG: Кол-во свечек 4H из БД - ", data.length);
 
         if(data.length === 0 ){
             console.error("ERROR: Предоставлена пустая база данных...");
@@ -105,9 +111,14 @@ export async function fetchFractals(component) {
         console.error("ERROR: Error fetching fractals...\n\n", error.toString());
     }
 }
-export async function fetchFractals4Hour(component) {
+
+export async function fetchFractals4Hour(component, ticker) {
+
+    console.log("DEBUG: [fetchFractals4Hour] Наименование тикера - ", ticker);
+    const url = `http://localhost:3000/4hours?fractals-from-db-4hours=${ticker}`;
+    console.log("DEBUG: [fetchFractals4Hour] URL запроса - ", url);
     try {
-        const response = await fetch("http://localhost:3000/fractals-from-db-4hours");
+        const response = await fetch(`http://localhost:3000/fractals-from-db-4hours?ticker=${ticker}`);
         const data = await response.json();
 
         if (!Array.isArray(data)) {

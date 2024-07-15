@@ -18,19 +18,21 @@ const client = new Client({
 
 client
     .connect()
-    .then(() =>
-        console.log(
-            "\n--------------------\nDEBUG: Connected to the database on port: ",
-            client.port
-        )
-    )
+    .then(() => console.log("\nDEBUG: Connected to the database on port: ", client.port))
     .catch((err) => console.error("Connection error", err.stack));
 
 app.get("/candlesstick", async (req, res) => {
+    const ticker = req.query.ticker;
+    const queryText = "SELECT time, open, close, low, high FROM candles WHERE ticker = $1 ORDER BY time";
+    const queryValues = [ticker];
+
+    // Логирование запроса и параметров
+    console.log("DEBUG: [candlesstick] TIKER:", ticker);
+    console.log("DEBUG: [candlesstick] SQL Query:", queryText);
+    console.log("DEBUG: [candlesstick] SQL Query Values:", queryValues);
+
     try {
-        const result = await client.query(
-            "SELECT time, open, close, low, high FROM candles order by time"
-        );
+        const result = await client.query(queryText, queryValues);
         res.send(result.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
@@ -50,10 +52,18 @@ app.get("/tickers", async (req, res) => {
 })
 
 app.get("/candlesstick-4hours", async (req, res) => {
+
+    const ticker = req.query.ticker;
+    const queryText = "SELECT time, open, close, low, high FROM candles4hour WHERE ticker = $1 ORDER BY time";
+    const queryValues = [ticker];
+
+    // Логирование запроса и параметров
+    console.log("DEBUG: [candlesstick-4hours] TIKER:", ticker);
+    console.log("DEBUG: [candlesstick-4hours] SQL Query:", queryText);
+    console.log("DEBUG: [candlesstick-4hours] SQL Query Values:", queryValues);
+
     try {
-        const result = await client.query(
-            "SELECT time, open, close, low, high FROM candles4hour order by time");
-        console.log("DEBUG: Кол-во тикеров из БД - ", result);
+        const result = await client.query(queryText, queryValues);
         res.send(result.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
@@ -62,12 +72,19 @@ app.get("/candlesstick-4hours", async (req, res) => {
 });
 
 app.get("/fractals-from-db-4hours", async (req, res) => {
+
+    const ticker = req.query.ticker;
+    const queryText = "SELECT time, extreme, log_message FROM fractals4hour WHERE ticker = $1";
+    const queryValues = [ticker];
+
+    // Логирование запроса и параметров
+    console.log("DEBUG: [fractals-from-db-4hours] TIKER:", ticker);
+    console.log("DEBUG: [fractals-from-db-4hours] SQL Query:", queryText);
+    console.log("DEBUG: [fractals-from-db-4hours] SQL Query Values:", queryValues);
+
     try {
-        const fractalsData = await client.query(
-            "SELECT time, extreme, log_message FROM fractals4hour"
-            //"SELECT time, extreme, log_message FROM fractals WHERE id BETWEEN 55 AND 59"
-        );
-        //console.log('DEBUG.server.mjs_40: result: ', fractalsData.rows);
+        const fractalsData = await client.query(queryText, queryValues);
+            //"SELECT time, extreme, log_message FROM fractals4hour"
         res.send(fractalsData.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
@@ -94,7 +111,6 @@ app.get("/fvg-from-db", async (req, res) => {
         const fvgData = await client.query(
             "SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT 5"
         );
-         console.log('DEBUG: fvgData: ', fvgData.rows);
         res.send(fvgData.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);

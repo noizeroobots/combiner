@@ -16,10 +16,24 @@ import {dataZoomConfig} from "../utils/dataZoomConfig.js";
 import {getSeriesConfig} from "../utils/seriesConfig.js";
 
 export default defineComponent({
+  props: {
+    ticker: {
+      type: String,
+      required: true,
+    },
+  },
   async mounted() {
-    await fetchCandles(this);
+    await fetchCandles(this, this.ticker);
     await fetchFractals(this);
     await fetchFvgs(this);
+  },
+  watch: {
+    ticker: {
+      immediate: true,
+      handler(newTicker) {
+        this.updateChart(newTicker);
+      }
+    }
   },
 
   data() {
@@ -47,6 +61,10 @@ export default defineComponent({
         categoryData.push(newDateString);
         values.push([0, 0, 0, 0]);
       }
+    },
+
+    async updateChart(ticker) {
+      await fetchCandles(this, ticker);
     },
 
     drawChart() {

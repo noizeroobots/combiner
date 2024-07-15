@@ -16,11 +16,26 @@ import {dataZoomConfig} from "../utils/dataZoomConfig.js";
 import { getSeriesConfig } from "../utils/seriesConfig.js"; // Импорт функции для получения объекта series
 
 export default defineComponent({
+  props: {
+    ticker: {
+      type: String,
+      required: true,
+    },
+  },
   async mounted() {
-    await fetchCandles4Hours(this);
-    await fetchFractals4Hour(this);
+    await fetchCandles4Hours(this, this.ticker);
+    await fetchFractals4Hour(this, this.ticker);
     await fetchFvgs(this);
   },
+  watch: {
+    ticker: {
+      immediate: true,
+      handler(newTicker) {
+        this.updateChart(newTicker);
+      }
+    }
+  },
+
   data() {
     return {
       categoryData: [],
@@ -45,6 +60,11 @@ export default defineComponent({
         categoryData.push(newDateString);
         values.push([0, 0, 0, 0]);
       }
+    },
+
+    async updateChart(ticker) {
+      await fetchCandles4Hours(this, ticker);
+      await fetchFractals4Hour(this, ticker);
     },
 
     drawChart() {
