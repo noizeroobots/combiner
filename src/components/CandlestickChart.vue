@@ -24,8 +24,8 @@ export default defineComponent({
   },
   async mounted() {
     await fetchCandles(this, this.ticker);
-    await fetchFractals(this);
-    await fetchFvgs(this);
+    await fetchFractals(this, this.ticker);
+    await fetchFvgs(this, this.ticker);
   },
   watch: {
     ticker: {
@@ -65,6 +65,8 @@ export default defineComponent({
 
     async updateChart(ticker) {
       await fetchCandles(this, ticker);
+      await fetchFractals(this, ticker);
+      await fetchFvgs(this, ticker);
     },
 
     drawChart() {

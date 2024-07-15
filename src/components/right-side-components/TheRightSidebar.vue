@@ -5,6 +5,7 @@ import { fetchTickers } from '../../api.js';
 
 // Создаем реактивное состояние для хранения тикеров
 const tickers = ref([]);
+const selectedTicker = ref(null);
 
 // Создаем функцию emit
 const emit = defineEmits(['select-ticker']);
@@ -17,6 +18,7 @@ onMounted(async () => {
 
 // Эмитим событие при нажатии на тикер
 const selectTicker = (ticker) => {
+  selectedTicker.value = ticker;
   emit('select-ticker', ticker);
 };
 </script>
@@ -26,7 +28,9 @@ const selectTicker = (ticker) => {
     <h2>Инструмент</h2>
     <ul>
       <li v-for="ticker in tickers" :key="ticker">
-        <a href="#" @click.prevent="selectTicker(ticker)">{{ ticker }}</a>
+        <a href="#" @click.prevent="selectTicker(ticker)" :class="{ 'active': ticker === selectedTicker }" >
+          {{ ticker }}
+        </a>
       </li>
     </ul>
   </div>

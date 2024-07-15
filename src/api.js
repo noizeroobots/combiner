@@ -95,9 +95,9 @@ export async function fetchCandles4Hours(component, ticker) {
     }
 }
 
-export async function fetchFractals(component) {
+export async function fetchFractals(component, ticker) {
     try {
-        const response = await fetch("http://localhost:3000/fractals-from-db");
+        const response = await fetch(`http://localhost:3000/fractals-from-db?ticker=${ticker}`);
         const data = await response.json();
 
         if (!Array.isArray(data)) {
@@ -113,7 +113,6 @@ export async function fetchFractals(component) {
 }
 
 export async function fetchFractals4Hour(component, ticker) {
-
     console.log("DEBUG: [fetchFractals4Hour] Наименование тикера - ", ticker);
     const url = `http://localhost:3000/4hours?fractals-from-db-4hours=${ticker}`;
     console.log("DEBUG: [fetchFractals4Hour] URL запроса - ", url);
@@ -133,9 +132,9 @@ export async function fetchFractals4Hour(component, ticker) {
     }
 }
 
-export async function fetchFvgs(component, limitFvg) {
+export async function fetchFvgs(component, ticker) {
     try {
-        const response = await fetch('http://localhost:3000/fvg-from-db');
+        const response = await fetch(`http://localhost:3000/fvg-from-db?ticker=${ticker}`);
         const data = await response.json();
 
         if (!Array.isArray(data)) {

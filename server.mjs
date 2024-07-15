@@ -72,19 +72,11 @@ app.get("/candlesstick-4hours", async (req, res) => {
 });
 
 app.get("/fractals-from-db-4hours", async (req, res) => {
-
     const ticker = req.query.ticker;
     const queryText = "SELECT time, extreme, log_message FROM fractals4hour WHERE ticker = $1";
     const queryValues = [ticker];
-
-    // Логирование запроса и параметров
-    console.log("DEBUG: [fractals-from-db-4hours] TIKER:", ticker);
-    console.log("DEBUG: [fractals-from-db-4hours] SQL Query:", queryText);
-    console.log("DEBUG: [fractals-from-db-4hours] SQL Query Values:", queryValues);
-
     try {
         const fractalsData = await client.query(queryText, queryValues);
-            //"SELECT time, extreme, log_message FROM fractals4hour"
         res.send(fractalsData.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
@@ -93,12 +85,11 @@ app.get("/fractals-from-db-4hours", async (req, res) => {
 });
 
 app.get("/fractals-from-db", async (req, res) => {
+    const ticker = req.query.ticker;
+    const queryText = "SELECT time, extreme, log_message FROM fractals WHERE ticker = $1";
+    const queryValues = [ticker];
     try {
-        const fractalsData = await client.query(
-            "SELECT time, extreme, log_message FROM fractals"
-            //"SELECT time, extreme, log_message FROM fractals WHERE id BETWEEN 55 AND 59"
-        );
-        //console.log('DEBUG.server.mjs_40: result: ', fractalsData.rows);
+        const fractalsData = await client.query(queryText, queryValues);
         res.send(fractalsData.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
@@ -107,10 +98,11 @@ app.get("/fractals-from-db", async (req, res) => {
 });
 
 app.get("/fvg-from-db", async (req, res) => {
+    const ticker = req.query.ticker;
+    const queryText = "SELECT time, end_time, fvg_high, fvg_low FROM fvg WHERE ticker = $1";
+    const queryValues = [ticker];
     try {
-        const fvgData = await client.query(
-            "SELECT time, end_time, fvg_high, fvg_low FROM fvg LIMIT 5"
-        );
+        const fvgData = await client.query(queryText, queryValues);
         res.send(fvgData.rows);
     } catch (err) {
         console.error("ERROR: in server.mjs: ", err);
