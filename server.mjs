@@ -86,7 +86,7 @@ app.get("/fractals-from-db-4hours", async (req, res) => {
 
 app.get("/fractals-from-db", async (req, res) => {
     const ticker = req.query.ticker;
-    const queryText = "SELECT time, extreme, log_message FROM fractals WHERE ticker = $1";
+    const queryText = "SELECT time, extreme, log_message FROM fractals WHERE ticker = $1 LIMIT 10";
     const queryValues = [ticker];
     try {
         const fractalsData = await client.query(queryText, queryValues);

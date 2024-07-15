@@ -53,5 +53,5 @@ const handleSelectTicker = (ticker) => {
     <TheRightSidebar @select-ticker="handleSelectTicker" />
   </div>
 
-  <TheNav />
+
 </template>

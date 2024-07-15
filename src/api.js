@@ -1,11 +1,7 @@
 export async function fetchCandles(component, ticker) {
-    console.log("DEBUG: Наименование тикера - ", ticker);
-    const url = `http://localhost:3000/candlesstick?ticker=${ticker}`;
-    console.log("DEBUG: URL запроса - ", url);
     try {
         const response = await fetch(`http://localhost:3000/candlesstick?ticker=${ticker}`);
         const data = await response.json();
-        console.log("DEBUG: Кол-во свечек из БД - ", data.length);
 
         if(data.length === 0 ){
             console.error("ERROR: Предоставлена пустая база данных...");

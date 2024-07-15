@@ -17,8 +17,10 @@ export const getSeriesConfig = (values, markPoints, markAreas, linesData) => [
         },
         markArea: {
             name: "FVG",
+            silent: true,
             label: {
                 show: true,
+                position: ['50%', '50%'],
                 color: "black",
                 fontSize: 12,
                 fontStyle: "bold",

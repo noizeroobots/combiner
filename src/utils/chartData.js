@@ -1,25 +1,32 @@
 export function getMarkPoints(fractals) {
     return fractals
         .filter(fractal => fractal.log_message === "Local low" || fractal.log_message === "Local high")
-        .map(fractal => ({
-            coord: [
-                fractal.time,
-                fractal.log_message === "Local low"
-                    ? fractal.extreme - 10
-                    : fractal.extreme + 10,
-            ],
-            value: fractal.log_message,
-            itemStyle: {
-                color: fractal.log_message === "Local low" ? "red" : "green",
-                opacity: 0.7,
-            },
-            symbol: "triangle",
-            symbolRotate: fractal.log_message === "Local low" ? 0 : 180,
-            symbolSize: 8,
-            label: {
-                show: false,
-            },
-        }));
+        .map(fractal => {
+            let offsetPercent = 1; // Процентное смещение от extreme
+
+            // Вычисляем процентное значение от extreme
+            let offsetValue = fractal.extreme * (offsetPercent / 100);
+
+            return {
+                coord: [
+                    fractal.time,
+                    fractal.log_message === "Local low"
+                        ? fractal.extreme - offsetValue
+                        : fractal.extreme + offsetValue,
+                ],
+                value: fractal.log_message,
+                itemStyle: {
+                    color: fractal.log_message === "Local low" ? "red" : "green",
+                    opacity: 0.7,
+                },
+                symbol: "triangle",
+                symbolRotate: fractal.log_message === "Local low" ? 0 : 180,
+                symbolSize: 8,
+                label: {
+                    show: false,
+                },
+            };
+        });
 }
 
 export function getMarkAreas(fvgs) {
@@ -65,17 +72,22 @@ export function getMarkShortLines(fractals, addHoursToDate) {
         }));
 }
 
-export function getLinesData(fractals, addHoursToDate) {
+
+export function getLinesData(fractals, categoryData) {
     return fractals
         .filter(fractal => fractal.log_message === "Local low" || fractal.log_message === "Local high")
-        .map(fractal => ({
+        .map(fractal => {
+            const startIndex = findCandleIndexByDate(categoryData, fractal.time);
+            const endIndex = startIndex + 30; // Сдвиг на 10 свечей вправо
+            const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+
+            return {
                 name: fractal.log_message,
                 type: "line",
                 data: [
                     [fractal.time, fractal.extreme],
-                    [addHoursToDate(fractal.time, 50).toISOString().replace(".000", ""), fractal.extreme]
+                    [endTime, fractal.extreme]
                 ],
-
                 lineStyle: {
                     color: fractal.log_message === "Local low" ? "red" : "green",
                     width: 1,
@@ -87,7 +99,11 @@ export function getLinesData(fractals, addHoursToDate) {
                     label: {
                         show: false
                     }
-                },
-            }
-        ));
+                }
+            };
+        });
+}
+
+function findCandleIndexByDate(categoryData, dateStr) {
+    return categoryData.findIndex(date => date === dateStr);
 }
