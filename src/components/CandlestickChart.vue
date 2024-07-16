@@ -5,7 +5,7 @@
 <script>
 import { defineComponent } from "vue";
 import * as echarts from "echarts";
-import { fetchFractals, fetchFvgs, fetchCandles } from "../api.js";
+import {fetchFractals, fetchFvgs, fetchCandles, fetchFvgs4Hour} from "../api.js";
 import { getMarkPoints, getMarkAreas, getLinesData } from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
@@ -24,7 +24,7 @@ export default defineComponent({
   async mounted() {
     await fetchCandles(this, this.ticker);
     await fetchFractals(this, this.ticker);
-    await fetchFvgs(this, this.ticker);
+    await fetchFvgs4Hour(this, this.ticker);
     this.extendXAxisByEmptyCandles();
   },
   watch: {
@@ -64,7 +64,7 @@ export default defineComponent({
     async updateChart(ticker) {
       await fetchCandles(this, ticker);
       await fetchFractals(this, ticker);
-      await fetchFvgs(this, ticker);
+      await fetchFvgs4Hour(this, ticker);
     },
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
@@ -73,8 +73,9 @@ export default defineComponent({
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
-      const markAreas = getMarkAreas(this.fvgs);
+      const markAreas = getMarkAreas(this.fvgs, this.categoryData);
       const linesData = getLinesData(this.fractals, this.categoryData);
+
       const option = {
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: "#e8f9fb" },

@@ -29,49 +29,28 @@ export function getMarkPoints(fractals) {
         });
 }
 
-export function getMarkAreas(fvgs) {
-    return fvgs.map(fvg => ({
-        data: [
-            [
-                {
-                    xAxis: fvg.time,
-                    yAxis: fvg.fvg_low
-                },
-                {
-                    xAxis: fvg.end_time,
-                    yAxis: fvg.fvg_high
-                },
-            ]
-        ]
-    }));
-}
-
-export function getMarkShortLines(fractals, addHoursToDate) {
-    return fractals
-        .filter(fractal => fractal.log_message === "Local low" || fractal.log_message === "Local high")
-        .map(fractal => ({
-            name: fractal.log_message,
-            yAxis: fractal.extreme,
-            lineStyle: {
-                color: fractal.log_message === "Local low" ? "red" : "green",
-                width: 0.9,
-                type: "solid",
-            },
-            label: {
-                show: true,
-                position: 'start'
-            },
+export function getMarkAreas(fvgs, categoryData) {
+    return fvgs.map(fvg => {
+        const startIndex = findCandleIndexByDate(categoryData, fvg.time);
+        const endIndex = startIndex + 30; // Сдвиг на 10 свечей вправо
+        const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+        return {
+            name: 'FVG 4H',
             data: [
-                {
-                    coord: [fractal.time, fractal.extreme],
-                },
-                {
-                    coord: [addHoursToDate(fractal.time, 5), fractal.extreme],
-                },
-            ],
-        }));
+                [
+                    {
+                        xAxis: fvg.time,
+                        yAxis: fvg.fvg_low
+                    },
+                    {
+                        xAxis: endTime,
+                        yAxis: fvg.fvg_high
+                    },
+                ]
+            ]
+        };
+    });
 }
-
 
 export function getLinesData(fractals, categoryData) {
     return fractals

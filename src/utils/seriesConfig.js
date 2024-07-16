@@ -28,7 +28,7 @@ export const getSeriesConfig = (values, markPoints, markAreas, linesData) => [
             itemStyle: {
                 color: "rgba(255, 255, 0, 0.2)",
                 borderColor: "black",
-                borderWidth: 1,
+                borderWidth: 0.1,
             },
             data: markAreas.map((area) => area.data[0]),
         },

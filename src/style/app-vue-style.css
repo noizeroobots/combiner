@@ -18,21 +18,23 @@
     font-size: 16px;
     font-weight: bold;
     color: #ffffff;
-    background-color: #007bff;
+    background-color: #143d3a;
     border: 10px;
-    border-radius: 50px;
+    border-radius: 2px;
     cursor: pointer;
-    transition: background-color 0.3s, opacity 0.3s;
+    transition: background-color 0.2s, opacity 0.8s;
     opacity: 0.5; /* начальное значение прозрачности для всех кнопок */
 }
 
 
 .switch-button:hover {
-    background-color: #0056b3;
+    background-color: #143d3a;
+    opacity: 0.9;
 }
 
 .switch-button.active {
-    opacity: 1; /* яркость активной кнопки */
+    color: brown;
+    opacity: 0.9; /* яркость активной кнопки */
 }
 
 .chart-container {

@@ -6,7 +6,7 @@
 <script>
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
-import {fetchFractals4Hour, fetchFvgs, fetchCandles4Hours} from "../api.js";
+import {fetchFractals4Hour, fetchFvgs4Hour, fetchCandles4Hours, fetchFvgs} from "../api.js";
 import {getMarkPoints, getMarkAreas, getLinesData,} from "../utils/chartData.js";
 import {toolboxConfig} from "../utils/toolboxConfig.js";
 import {tooltipConfig} from "../utils/tooltipConfig.js";
@@ -25,7 +25,8 @@ export default defineComponent({
   async mounted() {
     await fetchCandles4Hours(this, this.ticker);
     await fetchFractals4Hour(this, this.ticker);
-    await fetchFvgs(this);
+    await fetchFvgs4Hour(this, this.ticker);
+    this.extendXAxisByEmptyCandles();
   },
   watch: {
     ticker: {
@@ -57,14 +58,15 @@ export default defineComponent({
         var newDate = new Date(lastDate);
         newDate.setHours(lastDate.getHours() + i);
         var newDateString = newDate.toISOString();
-        categoryData.push(newDateString);
-        values.push([0, 0, 0, 0]);
+        this.categoryData.push(newDateString);
+        this.values.push([0, 0, 0, 0]);
       }
     },
 
     async updateChart(ticker) {
       await fetchCandles4Hours(this, ticker);
       await fetchFractals4Hour(this, ticker);
+      await fetchFvgs4Hour(this, ticker);
     },
 
     drawChart() {
@@ -74,8 +76,8 @@ export default defineComponent({
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
-      const markAreas = getMarkAreas(this.fvgs);
-      const linesData = getLinesData(this.fractals, this.addHoursToDate);
+      const markAreas = getMarkAreas(this.fvgs, this.categoryData);
+      const linesData = getLinesData(this.fractals, this.categoryData);
 
       const option = {
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
