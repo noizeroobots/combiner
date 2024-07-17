@@ -1,0 +1,64 @@
+.welcome-container {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Высота окна браузера */
+    overflow: hidden;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../assets/vect_1.jpg') no-repeat center center/cover;
+    opacity: 0.5; /* Прозрачность изображения */
+    z-index: 1;
+}
+
+.content-overlay {
+    position: relative;
+    z-index: 2;
+    color: honeydew;
+    text-align: left;
+    padding: 1% 100px;
+    border-radius: 1px; /* Скругленные углы */
+    max-width: 100%; /* Максимальная ширина */
+    background-color: rgba(0, 0, 0, 0.85); /* Полупрозрачный черный фон */
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Тень текста */
+}
+
+p {
+    font-size: 1.5em;
+    line-height: 1.5; /* Межстрочный интервал */
+}
+
+/* Анимации */
+.content-overlay {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Респонсивность */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1.2em;
+    }
+
+    .content-overlay {
+        padding: 15% 10px;
+    }
+}

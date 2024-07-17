@@ -1,0 +1,52 @@
+.main-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh; /* Высота 100% от высоты окна */
+}
+.content-container {
+    flex: 1; /* Занимает все доступное пространство */
+    padding: 20px;
+}
+
+.button-container {
+    margin-bottom: 20px;
+}
+
+.switch-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #143d3a;
+    border: 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.8s;
+    opacity: 0.5; /* начальное значение прозрачности для всех кнопок */
+}
+
+
+.switch-button:hover {
+    background-color: #143d3a;
+    opacity: 0.9;
+}
+
+.switch-button.active {
+    color: brown;
+    opacity: 0.9; /* яркость активной кнопки */
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px; /* можно настроить под нужные размеры */
+}
+
+.chart {
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar {
+    /* стили для сайдбара */
+}

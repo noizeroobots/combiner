@@ -1,0 +1,25 @@
+.reset-button {
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.reset-button:hover {
+    background-color: #2b7a73;
+}
+
+.bg-turquoise {
+    background-color: #2b7a73;
+}
+
+.text-progress{
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 20px;
+}
