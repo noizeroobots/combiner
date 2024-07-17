@@ -1,8 +1,9 @@
 export async function fetchCandles(component, ticker) {
     try {
         // Делаем запрос к новому серверу напрямую
-        const response = await fetch(`http://localhost:8089/api/candles/get-candles?ticker=${ticker}`);
+        const response = await fetch(`http://localhost:8089/api/candles/get-candles-fifteen-minutes?ticker=${ticker}`);
         const data = await response.json();
+
 
         if (data.length === 0) {
             console.error("ERROR: Предоставлена пустая база данных...");
@@ -27,20 +28,16 @@ export async function fetchCandles(component, ticker) {
     }
 }
 
-export async function fetchTickers(component) {
+export async function fetchTickers() {
     try {
-        const response = await fetch(`http://localhost:8089/api/candles/get-tickers`);
-        const text = await response.text();
-        console.log("DEBUG: text - ", text.replace(/"/g, "'"));
-        // Парсим JSON из текста
-        const data = JSON.parse(text);
-        console.log("DEBUG: data - ", data);
+        const response = await fetch(`http://localhost:8089/api/tickers/get-tickers`);
+        const data = await response.json();
         if (data.length === 0) {
-            console.error("ERROR: Предоставлена пустая база данных...");
+            console.error("ERROR: Предоставлена пустой массив JSON..");
         }
 
         if (!Array.isArray(data)) {
-            console.error("Data is not an array");
+            console.error("ERROR: Предоставленные данные не являются массивом JSON...");
             return [];
         }
         return data.map((item) => item.ticker);
@@ -52,7 +49,7 @@ export async function fetchTickers(component) {
 
 export async function fetchCandles4Hours(component, ticker) {
     try {
-        const response = await fetch(`http://localhost:3000/candlesstick-4hours?ticker=${ticker}`);
+        const response = await fetch(`http://localhost:8089/api/candles/get-candles-four-hours?ticker=${ticker}`);
         const data = await response.json();
         if (data.length === 0) {
             console.error("ERROR: Предоставлена пустая база данных...");
@@ -107,7 +104,7 @@ export async function fetchFractals4Hour(component, ticker) {
 
 export async function fetchFvgs(component, ticker) {
     try {
-        const response = await fetch(`http://localhost:3000/fvg-from-db?ticker=${ticker}`);
+        const response = await fetch(`http://localhost:8089/api/fvg/get-fvg-fifteen-minutes?ticker=${ticker}`);
         const data = await response.json();
         if (!Array.isArray(data)) {
             console.error("FVG data is not an array");
@@ -122,8 +119,9 @@ export async function fetchFvgs(component, ticker) {
 
 export async function fetchFvgs4Hour(component, ticker) {
     try {
-        const response = await fetch(`http://localhost:3000/fvg-from-db-4hours?ticker=${ticker}`);
+        const response = await fetch(`http://localhost:8089/api/fvg/get-fvg-four-hours?ticker=${ticker}`);
         const data = await response.json();
+        console.log("DEBUG: Данные из АПИ для FVG: ", data)
         if (!Array.isArray(data)) {
             console.error("FVG data is not an array");
             return;

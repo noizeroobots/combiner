@@ -1,0 +1,164 @@
+openapi: 3.0.3
+info:
+  title: Робот Combiner
+  version: 0.0.1
+servers:
+  - url: 'http://localhost:8089/api/'
+    description: Server
+paths:
+  /candles/get-candles-fifteen-minutes:
+    get:
+      summary: Метод получения 15М свечек
+      tags:
+        - Candles
+      operationId: getCandles15M
+      parameters:
+        - in: query
+          name: ticker
+          description: Тикер инструмента
+          required: true
+          schema:
+            type: string
+          example: OZON
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Candles"
+        '400':
+          description: Некорректные входные данные. Возвращает список атрибутов с ошибками
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+        'default':
+          description: Чёт-то сломалось
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /candles/get-candles-four-hours:
+    get:
+      summary: Метод получения 4Н свечек
+      tags:
+        - Candles
+      operationId: getCandles4H
+      parameters:
+        - in: query
+          name: ticker
+          description: Тикер инструмента
+          required: true
+          schema:
+            type: string
+          example: OZON
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Candles"
+        '400':
+          description: Некорректные входные данные. Возвращает список атрибутов с ошибками
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+        'default':
+          description: Чёт-то сломалось
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tickers/tickers:
+    get:
+      summary: Метод получения тикеров для отображения на сайдбаре
+      tags:
+        - Tickers
+      operationId: getTickers
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tickers"
+        '400':
+          description: Некорректные входные данные. Возвращает список атрибутов с ошибками
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+        'default':
+          description: Чёт-то сломалось
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Candle:
+      type: object
+      required:
+        - time
+        - high
+        - low
+        - open
+        - close
+      properties:
+        time:
+          type: string
+          example: 2024-04-09T06:00:00Z
+        high:
+          type: number
+          format: double
+          example: 3844.52
+        low:
+          type: number
+          format: double
+          example: 3844.53
+        open:
+          type: number
+          format: double
+          example: 3844.54
+        close:
+          type: number
+          format: double
+          example: 3844.55
+    Candles:
+      type: array
+      items:
+        $ref: "#/components/schemas/Candle"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    Ticker:
+      type: object
+      required:
+        - ticker
+      properties:
+        ticker:
+          type: string
+          example: OZON
+    Tickers:
+      type: array
+      items:
+        $ref: "#/components/schemas/Ticker"

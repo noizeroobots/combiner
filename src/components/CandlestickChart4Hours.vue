@@ -6,8 +6,8 @@
 <script>
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
-import {fetchFractals4Hour, fetchFvgs4Hour, fetchCandles4Hours, fetchFvgs} from "../api.js";
-import {getMarkPoints, getMarkAreas, getLinesData,} from "../utils/chartData.js";
+import {fetchFractals4Hour, fetchFvgs4Hour, fetchCandles4Hours} from "../api.js";
+import {getMarkPoints, drawFvgAreas, getLinesData,} from "../utils/chartData.js";
 import {toolboxConfig} from "../utils/toolboxConfig.js";
 import {tooltipConfig} from "../utils/tooltipConfig.js";
 import { xAxisConfig } from "../utils/xAxisConfig.js";
@@ -76,7 +76,7 @@ export default defineComponent({
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
-      const markAreas = getMarkAreas(this.fvgs, this.categoryData);
+      const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
       const linesData = getLinesData(this.fractals, this.categoryData);
 
       const option = {

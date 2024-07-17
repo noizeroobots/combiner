@@ -6,7 +6,7 @@
 import { defineComponent } from "vue";
 import * as echarts from "echarts";
 import {fetchFractals, fetchFvgs, fetchCandles, fetchFvgs4Hour} from "../api.js";
-import { getMarkPoints, getMarkAreas, getLinesData } from "../utils/chartData.js";
+import { getMarkPoints, drawFvgAreas, getLinesData } from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
 import { yAxisConfig } from "../utils/yAxisConfig.js";
@@ -73,7 +73,7 @@ export default defineComponent({
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
-      const markAreas = getMarkAreas(this.fvgs, this.categoryData);
+      const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
       const linesData = getLinesData(this.fractals, this.categoryData);
 
       const option = {
