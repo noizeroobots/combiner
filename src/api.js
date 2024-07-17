@@ -1,7 +1,9 @@
 export async function fetchCandles(component, ticker) {
     try {
-        const response = await fetch(`http://localhost:3000/candlesstick?ticker=${ticker}`);
+        // Делаем запрос к новому серверу напрямую
+        const response = await fetch(`http://localhost:8089/api/candles/get-candles?ticker=${ticker}`);
         const data = await response.json();
+
         if (data.length === 0) {
             console.error("ERROR: Предоставлена пустая база данных...");
         }
@@ -9,6 +11,8 @@ export async function fetchCandles(component, ticker) {
             console.error("Data is not an array");
             return;
         }
+
+        // Обновляем данные компонента
         component.categoryData = data.map((item) => item.time);
         component.values = data.map((item) => [
             item.open,
@@ -25,10 +29,12 @@ export async function fetchCandles(component, ticker) {
 
 export async function fetchTickers(component) {
     try {
-        const response = await fetch("http://localhost:3000/tickers");
+        const response = await fetch(`http://localhost:8089/api/candles/get-tickers`);
         const text = await response.text();
+        console.log("DEBUG: text - ", text.replace(/"/g, "'"));
         // Парсим JSON из текста
         const data = JSON.parse(text);
+        console.log("DEBUG: data - ", data);
         if (data.length === 0) {
             console.error("ERROR: Предоставлена пустая база данных...");
         }
