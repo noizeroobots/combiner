@@ -78,6 +78,42 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /fvg/get-fvg-four-hours:
+    get:
+      summary: Метод получения FVG 4H
+      tags:
+        - FVG
+      operationId: getCandles4H
+      parameters:
+        - in: query
+          name: ticker
+          description: Тикер инструмента
+          required: true
+          schema:
+            type: string
+          example: OZON
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Fvgs"
+        '400':
+          description: Некорректные входные данные. Возвращает список атрибутов с ошибками
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+        'default':
+          description: Чёт-то сломалось
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /tickers/tickers:
     get:
       summary: Метод получения тикеров для отображения на сайдбаре
@@ -162,3 +198,29 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Ticker"
+    Fvg:
+      type: object
+      required:
+        - time
+        - endTime
+        - fvgHigh
+        - fvgLow
+      properties:
+        time:
+          type: string
+          example: 2024-04-09T06:00:00Z
+        endTime:
+          type: string
+          example: 2024-04-09T06:00:00Z
+        fvgHigh:
+          type: number
+          format: double
+          example: 3844.52
+        fvgLow:
+          type: number
+          format: double
+          example: 3844.52
+    Fvgs:
+      type: array
+      items:
+        $ref: "#/components/schemas/Fvg"

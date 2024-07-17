@@ -34,19 +34,17 @@ export function drawFvgAreas(fvgs, categoryData) {
         const startIndex = findCandleIndexByDate(categoryData, fvg.time);
         const endIndex = startIndex + 30; // Сдвиг на 10 свечей вправо
         const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
-
-        //console.log("DEBUG: fvg.time начало фигуры: ", fvg.fvg_low)
         return {
             name: 'FVG 4H',
             data: [
                 [
                     {
                         xAxis: fvg.time,
-                        yAxis: fvg.fvg_low
+                        yAxis: fvg.fvgLow
                     },
                     {
                         xAxis: endTime,
-                        yAxis: fvg.fvg_high
+                        yAxis: fvg.fvgHigh
                     },
                 ]
             ]
