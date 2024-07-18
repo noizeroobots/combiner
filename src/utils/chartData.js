@@ -36,6 +36,19 @@ export function drawFvgAreas(fvgs, categoryData) {
         const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
         return {
             name: 'FVG 4H',
+            itemStyle: {
+                show: true,
+                color: "rgba(255, 255, 0, 0.2)", // Пример стиля
+                borderColor: "green",
+                borderWidth: 1,
+            },
+            label: {
+                show: true,
+                position: ['50%', '50%'],
+                color: "green",
+                fontSize: 12,
+                fontStyle: "bold",
+            },
             data: [
                 [
                     {
@@ -47,7 +60,43 @@ export function drawFvgAreas(fvgs, categoryData) {
                         yAxis: fvg.fvgHigh
                     },
                 ]
-            ]
+            ],
+        };
+    });
+}
+
+export function drawFvgAreas1(fvgs, categoryData) {
+    return fvgs.map(fvg => {
+        const startIndex = findCandleIndexByDate(categoryData, fvg.time);
+        const endIndex = startIndex + 50; // Сдвиг на 10 свечей вправо
+        const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+        return {
+            name: 'FVG 4H',
+            itemStyle: {
+                show: true,
+                color: "rgba(255, 255, 0, 0.2)", // Пример стиля
+                borderColor: "green",
+                borderWidth: 1,
+            },
+            label: {
+                show: true,
+                position: ['50%', '50%'],
+                color: "green",
+                fontSize: 12,
+                fontStyle: "bold",
+            },
+            data: [
+                [
+                    {
+                        xAxis: fvg.time,
+                        yAxis: fvg.fvgLow
+                    },
+                    {
+                        xAxis: endTime,
+                        yAxis: fvg.fvgHigh
+                    },
+                ]
+            ],
         };
     });
 }
@@ -86,3 +135,4 @@ export function getLinesData(fractals, categoryData) {
 function findCandleIndexByDate(categoryData, dateStr) {
     return categoryData.findIndex(date => date === dateStr);
 }
+

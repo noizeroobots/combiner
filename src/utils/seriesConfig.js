@@ -1,5 +1,7 @@
 // src/utils/seriesConfig.js
-export const getSeriesConfig = (values, markPoints, markAreas, linesData) => [
+
+
+export const getSeriesConfig = (values, markPoints, markAreas, markAreas1, linesData) => [
     {
         type: "candlestick",
         data: values,
@@ -16,21 +18,23 @@ export const getSeriesConfig = (values, markPoints, markAreas, linesData) => [
             // data: markShortLines,
         },
         markArea: {
-            name: "FVG",
-            silent: true,
-            label: {
-                show: true,
-                position: ['50%', '50%'],
-                color: "black",
-                fontSize: 12,
-                fontStyle: "bold",
-            },
+             silent: false,
+            // label: {
+            //     show: true,
+            //     position: ['50%', '50%'],
+            //     color: "black",
+            //     fontSize: 12,
+            //     fontStyle: "bold",
+            // },
             itemStyle: {
                 color: "rgba(255, 255, 0, 0.2)",
                 borderColor: "black",
-                borderWidth: 0.1,
+                borderWidth: 0.2,
             },
-            data: markAreas.map((area) => area.data[0]),
+            data: [
+                ...markAreas.map((area) => area.data[0]),
+                ...markAreas1.map((area) => area.data[0]),
+                ],
         },
     },
     ...linesData,

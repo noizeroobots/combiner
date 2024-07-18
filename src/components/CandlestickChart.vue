@@ -5,8 +5,8 @@
 <script>
 import { defineComponent } from "vue";
 import * as echarts from "echarts";
-import {fetchFractals, fetchFvgs, fetchCandles, fetchFvgs4Hour} from "../api.js";
-import { getMarkPoints, drawFvgAreas, getLinesData } from "../utils/chartData.js";
+import {fetchFractals, fetchFvgs, fetchCandles} from "../api.js";
+import { getMarkPoints, drawFvgAreas, getLinesData, drawFvgAreas1 } from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
 import { yAxisConfig } from "../utils/yAxisConfig.js";
@@ -24,8 +24,7 @@ export default defineComponent({
   async mounted() {
     await fetchCandles(this, this.ticker);
     await fetchFractals(this, this.ticker);
-    await fetchFvgs4Hour(this, this.ticker);
-    this.extendXAxisByEmptyCandles();
+    await fetchFvgs(this, this.ticker);
   },
   watch: {
     ticker: {
@@ -64,7 +63,7 @@ export default defineComponent({
     async updateChart(ticker) {
       await fetchCandles(this, ticker);
       await fetchFractals(this, ticker);
-      await fetchFvgs4Hour(this, ticker);
+      await fetchFvgs(this, ticker);
     },
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
@@ -74,7 +73,9 @@ export default defineComponent({
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
       const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
+      const markAreas1 = drawFvgAreas1(this.fvgs, this.categoryData);
       const linesData = getLinesData(this.fractals, this.categoryData);
+      const config = getSeriesConfig(this.values, markPoints, markAreas, markAreas1, linesData);
 
       const option = {
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -85,7 +86,7 @@ export default defineComponent({
         toolbox: toolboxConfig,
         xAxis: xAxisConfig(this.categoryData),
         yAxis: yAxisConfig(this.values),
-        series: getSeriesConfig(this.values, markPoints, markAreas, linesData),
+        series: config,
         dataZoom: dataZoomConfig,
       };
       myChart.setOption(option);
