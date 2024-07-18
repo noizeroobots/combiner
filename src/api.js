@@ -74,7 +74,7 @@ export async function fetchCandles4Hours(component, ticker) {
 
 export async function fetchFractals(component, ticker) {
     try {
-        const response = await fetch(`http://localhost:3000/fractals-from-db?ticker=${ticker}`);
+        const response = await fetch(`http://localhost:8089/api/fractal/get-fractal-fifteen-minutes?ticker=${ticker}`);
         const data = await response.json();
         if (!Array.isArray(data)) {
             console.error("Fractals data is not an array");
@@ -89,7 +89,7 @@ export async function fetchFractals(component, ticker) {
 
 export async function fetchFractals4Hour(component, ticker) {
     try {
-        const response = await fetch(`http://localhost:3000/fractals-from-db-4hours?ticker=${ticker}`);
+        const response = await fetch(`http://localhost:8089/api/fractal/get-fractal-four-hours?ticker=${ticker}`);
         const data = await response.json();
         if (!Array.isArray(data)) {
             console.error("Fractals data is not an array");
@@ -121,7 +121,7 @@ export async function fetchFvgs4Hour(component, ticker) {
     try {
         const response = await fetch(`http://localhost:8089/api/fvg/get-fvg-four-hours?ticker=${ticker}`);
         const data = await response.json();
-        console.log("DEBUG: Данные из АПИ для FVG: ", data)
+        //console.log("DEBUG: Данные из АПИ для FVG: ", data)
         if (!Array.isArray(data)) {
             console.error("FVG data is not an array");
             return;
