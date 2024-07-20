@@ -10,9 +10,7 @@ export function getMarkPoints(fractals) {
             return {
                 coord: [
                     fractal.time,
-                    fractal.logMessage === "Local low"
-                        ? fractal.extreme - offsetValue
-                        : fractal.extreme + offsetValue,
+                    fractal.logMessage === "Local low" ? fractal.extreme - offsetValue : fractal.extreme + offsetValue,
                 ],
                 value: fractal.logMessage,
                 itemStyle: {
@@ -65,38 +63,33 @@ export function drawFvgAreas(fvgs, categoryData) {
     });
 }
 
-export function drawFvgAreas1(fvgs, categoryData) {
-    return fvgs.map(fvg => {
-        const startIndex = findCandleIndexByDate(categoryData, fvg.time);
-        const endIndex = startIndex + 50; // Сдвиг на 10 свечей вправо
-        const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+export function drawFibo(fibo) {
+    return fibo.map(fibo => {
+        // const startIndex = findFiboIndexByDate(fibo, fibo.time);
+        // console.log("DEBUG: startIndex: ", startIndex);
+        // console.log("DEBUG: fiboTime: ", fibo.time);
+        // const endIndex = startIndex + 10; // Сдвиг на 10 свечей вправо
+        // const endTime = endIndex < fibo.length ? fibo[endIndex] : fibo[fibo.length - 1];
         return {
-            name: 'FVG 4H',
-            itemStyle: {
-                show: true,
-                color: "rgba(255, 255, 0, 0.2)", // Пример стиля
-                borderColor: "green",
-                borderWidth: 1,
-            },
-            label: {
-                show: true,
-                position: ['50%', '50%'],
-                color: "green",
-                fontSize: 12,
-                fontStyle: "bold",
-            },
+            name: 'Fibo',
             data: [
                 [
                     {
-                        xAxis: fvg.time,
-                        yAxis: fvg.fvgLow
+                        xAxis: fibo.time,
+                        yAxis: fibo.fibo_high
                     },
                     {
-                        xAxis: endTime,
-                        yAxis: fvg.fvgHigh
+                        xAxis: "2024-07-19T08:00:00Z",
+                        yAxis: fibo.fibo_low
                     },
                 ]
             ],
+            itemStyle: {
+                show: true,
+                color: "rgba(162,5,34,0.2)", // Пример стиля
+                borderColor: "green",
+                borderWidth: 1,
+            },
         };
     });
 }
@@ -130,6 +123,14 @@ export function getLinesData(fractals, categoryData) {
                 }
             };
         });
+}
+
+function fincFvgIndexByDate(fvgs, dateStr) {
+    return fvgs.findIndex(date => date === dateStr);
+}
+
+function findFiboIndexByDate(fibo, dateStr) {
+    return fibo.findIndex(date => date === dateStr);
 }
 
 function findCandleIndexByDate(categoryData, dateStr) {

@@ -129,6 +129,20 @@ export async function fetchFvgs4Hour(component, ticker) {
         component.fvgs = data;
         component.drawChart();
     } catch (error) {
-        console.log('ERROR: Какая-то ошибка с достованием FVG...\n\n', error);
+        console.log('ERROR: Какая-то ошибка с достованием fetchFvgs4Hour...\n\n', error);
+    }
+}
+export async function fetchFibo(component, ticker) {
+    try {
+        const response = await fetch(`http://localhost:8089/api/fibo/get-fibo?ticker=${ticker}`);
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+            console.error("Fibo data is not an array");
+            return;
+        }
+        component.fibo = data;
+        component.drawChart();
+    } catch (error) {
+        console.log('ERROR: Какая-то ошибка с достованием fetchFibo...\n\n', error);
     }
 }

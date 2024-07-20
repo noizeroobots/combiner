@@ -5,14 +5,14 @@
 <script>
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
-import {fetchFractals4Hour, fetchFvgs4Hour, fetchCandles4Hours} from "../api.js";
-import {getMarkPoints, drawFvgAreas, getLinesData, drawFvgAreas1} from "../utils/chartData.js";
+import {fetchFractals4Hour, fetchFvgs4Hour, fetchCandles4Hours, fetchFibo} from "../api.js";
+import {getMarkPoints, drawFvgAreas, getLinesData, drawFibo} from "../utils/chartData.js";
 import {toolboxConfig} from "../utils/toolboxConfig.js";
 import {tooltipConfig} from "../utils/tooltipConfig.js";
 import {xAxisConfig} from "../utils/xAxisConfig.js";
 import {yAxisConfig} from "../utils/yAxisConfig.js";
 import {dataZoomConfig} from "../utils/dataZoomConfig.js";
-import {getSeriesConfig} from "../utils/seriesConfig.js"; // Импорт функции для получения объекта series
+import {getSeriesConfig4H} from "../utils/seriesConfig.js"; // Импорт функции для получения объекта series
 
 export default defineComponent({
   props: {
@@ -25,6 +25,7 @@ export default defineComponent({
     await fetchCandles4Hours(this, this.ticker);
     await fetchFractals4Hour(this, this.ticker);
     await fetchFvgs4Hour(this, this.ticker);
+    await fetchFibo(this, this.ticker);
   },
   watch: {
     ticker: {
@@ -41,6 +42,7 @@ export default defineComponent({
       values: [],
       fractals: [],
       fvgs: [],
+      fibo: [],
     };
   },
   methods: {
@@ -65,6 +67,7 @@ export default defineComponent({
       await fetchCandles4Hours(this, ticker);
       await fetchFractals4Hour(this, ticker);
       await fetchFvgs4Hour(this, ticker);
+      await fetchFibo(this, ticker);
     },
 
     drawChart() {
@@ -75,9 +78,9 @@ export default defineComponent({
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
       const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
-      const markAreas1 = drawFvgAreas1(this.fvgs, this.categoryData);
+      const markAreasFibo = drawFibo(this.fibo);
       const linesData = getLinesData(this.fractals, this.categoryData);
-      const config = getSeriesConfig(this.values, markPoints, markAreas, markAreas1, linesData);
+      const config = getSeriesConfig4H(this.values, markPoints, markAreas, markAreasFibo, linesData);
 
 
       const option = {
@@ -89,7 +92,6 @@ export default defineComponent({
         toolbox: toolboxConfig,
         xAxis: xAxisConfig(this.categoryData),
         yAxis: yAxisConfig(this.values),
-        //series: getSeriesConfig(this.values, markPoints, markAreas, markAreas1, linesData),
         series: config,
         dataZoom: dataZoomConfig,
       };

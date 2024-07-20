@@ -5,14 +5,14 @@
 <script>
 import { defineComponent } from "vue";
 import * as echarts from "echarts";
-import {fetchFractals, fetchFvgs, fetchCandles} from "../api.js";
-import { getMarkPoints, drawFvgAreas, getLinesData, drawFvgAreas1 } from "../utils/chartData.js";
+import {fetchFractals, fetchFvgs, fetchCandles, fetchFibo} from "../api.js";
+import { getMarkPoints, drawFvgAreas, getLinesData, drawFibo } from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
 import { yAxisConfig } from "../utils/yAxisConfig.js";
 import { xAxisConfig } from "../utils/xAxisConfig.js";
 import { dataZoomConfig } from "../utils/dataZoomConfig.js";
-import { getSeriesConfig } from "../utils/seriesConfig.js";
+import { getSeriesConfig15M} from "../utils/seriesConfig.js";
 
 export default defineComponent({
   props: {
@@ -25,6 +25,7 @@ export default defineComponent({
     await fetchCandles(this, this.ticker);
     await fetchFractals(this, this.ticker);
     await fetchFvgs(this, this.ticker);
+    await fetchFibo(this, this.ticker);
   },
   watch: {
     ticker: {
@@ -64,6 +65,7 @@ export default defineComponent({
       await fetchCandles(this, ticker);
       await fetchFractals(this, ticker);
       await fetchFvgs(this, ticker);
+      await fetchFibo(this, ticker);
     },
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
@@ -73,9 +75,9 @@ export default defineComponent({
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
       const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
-      const markAreas1 = drawFvgAreas1(this.fvgs, this.categoryData);
+      const markAreasFibo = drawFibo(this.fibo);
       const linesData = getLinesData(this.fractals, this.categoryData);
-      const config = getSeriesConfig(this.values, markPoints, markAreas, markAreas1, linesData);
+      const config = getSeriesConfig15M(this.values, markPoints, markAreas, markAreasFibo, linesData);
 
       const option = {
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
