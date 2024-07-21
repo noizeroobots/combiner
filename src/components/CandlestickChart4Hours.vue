@@ -6,7 +6,7 @@
 import {defineComponent, setBlockTracking} from "vue";
 import * as echarts from "echarts";
 import {fetchFractals4Hour, fetchFvgs4Hour, fetchCandles4Hours, fetchFibo} from "../api.js";
-import {getMarkPoints, drawFvgAreas, getLinesData, drawFibo} from "../utils/chartData.js";
+import {getMarkPoints, drawFvgAreas, getLinesData, drawFiboPremiumZone, drawFiboDiscoundZone} from "../utils/chartData.js";
 import {toolboxConfig} from "../utils/toolboxConfig.js";
 import {tooltipConfig} from "../utils/tooltipConfig.js";
 import {xAxisConfig} from "../utils/xAxisConfig.js";
@@ -77,10 +77,12 @@ export default defineComponent({
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
       const markPoints = getMarkPoints(this.fractals);
-      const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
-      const markAreasFibo = drawFibo(this.fibo);
+      const markAreasFvgZone = drawFvgAreas(this.fvgs, this.categoryData);
+      const markAreaFiboPremiumZone = drawFiboPremiumZone(this.fibo, this.categoryData);
+      const markAreaFiboDiscountZone = drawFiboDiscoundZone(this.fibo, this.categoryData);
+
       const linesData = getLinesData(this.fractals, this.categoryData);
-      const config = getSeriesConfig4H(this.values, markPoints, markAreas, markAreasFibo, linesData);
+      const config = getSeriesConfig4H(this.values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData);
 
 
       const option = {
@@ -97,30 +99,8 @@ export default defineComponent({
       };
       myChart.setOption(option);
       // Добавим обработчик событий для вертикального масштабирования
-      myChart.getZr().on('mousedown', (params) => {
-        if (params.target && params.target.x && params.target.y) {
-          const startY = params.offsetY;
-          const onMouseMove = (moveParams) => {
-            const endY = moveParams.offsetY;
-            const deltaY = endY - startY;
-            // Определите направление и степень масштабирования
-            const scaleChange = deltaY / chartDom.clientHeight * 100;
-            // Изменим dataZoom для yAxis
-            myChart.dispatchAction({
-              type: 'dataZoom',
-              yAxisIndex: 0,
-              start: Math.max(0, Math.min(100, dataZoomConfig[2].start - scaleChange)),
-              end: Math.max(0, Math.min(100, dataZoomConfig[2].end - scaleChange))
-            });
-          };
-          const onMouseUp = () => {
-            myChart.getZr().off('mousemove', onMouseMove);
-            myChart.getZr().off('mouseup', onMouseUp);
-          };
-          myChart.getZr().on('mousemove', onMouseMove);
-          myChart.getZr().on('mouseup', onMouseUp);
-        }
-      });
+
+
     },
   },
 });

@@ -34,61 +34,88 @@ export function drawFvgAreas(fvgs, categoryData) {
         const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
         return {
             name: 'FVG 4H',
-            itemStyle: {
-                show: true,
-                color: "rgba(255, 255, 0, 0.2)", // Пример стиля
-                borderColor: "green",
-                borderWidth: 1,
-            },
-            label: {
-                show: true,
-                position: ['50%', '50%'],
-                color: "green",
-                fontSize: 12,
-                fontStyle: "bold",
-            },
-            data: [
-                [
+            data: {
+                0: [
                     {
                         xAxis: fvg.time,
-                        yAxis: fvg.fvgLow
+                        yAxis: fvg.fvgLow,
+                        itemStyle: {
+                            color: "rgba(243,217,43,0.5)",
+                            borderColor: "black",
+                            borderWidth: 0.1,
+                        },
+                        label: {
+                            show: true,
+                            position: ['50%', '50%'],
+                            color: "green",
+                            fontSize: 12,
+                            fontStyle: "bold",
+                        },
                     },
                     {
                         xAxis: endTime,
-                        yAxis: fvg.fvgHigh
+                        yAxis: fvg.fvgHigh,
                     },
-                ]
-            ],
+
+                ],
+            },
         };
     });
 }
 
-export function drawFibo(fibo) {
+export function drawFiboPremiumZone(fibo, categoryData) {
     return fibo.map(fibo => {
-        // const startIndex = findFiboIndexByDate(fibo, fibo.time);
-        // console.log("DEBUG: startIndex: ", startIndex);
-        // console.log("DEBUG: fiboTime: ", fibo.time);
-        // const endIndex = startIndex + 10; // Сдвиг на 10 свечей вправо
-        // const endTime = endIndex < fibo.length ? fibo[endIndex] : fibo[fibo.length - 1];
+        const startIndex = findCandleIndexByDate(categoryData, fibo.time);
+        const endIndex = startIndex + 170;
+        const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
         return {
             name: 'Fibo',
-            data: [
-                [
+            data: {
+                0: [
                     {
                         xAxis: fibo.time,
-                        yAxis: fibo.fibo_high
+                        yAxis: fibo.fibo_high,
+                        itemStyle: {
+                            color: "rgba(77,227,36,0.2)", // Пример стиля
+                            borderColor: "black",
+                            borderWidth: 0.1,
+                        }
                     },
                     {
-                        xAxis: "2024-07-19T08:00:00Z",
-                        yAxis: fibo.fibo_low
+                        xAxis: endTime,
+                        yAxis: fibo.fibo_middle,
                     },
-                ]
-            ],
-            itemStyle: {
-                show: true,
-                color: "rgba(162,5,34,0.2)", // Пример стиля
-                borderColor: "green",
-                borderWidth: 1,
+
+                ],
+            },
+        };
+    });
+}
+
+export function drawFiboDiscoundZone(fibo, categoryData) {
+    return fibo.map(fibo => {
+        const startIndex = findCandleIndexByDate(categoryData, fibo.time);
+        const endIndex = startIndex + 170;
+        const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+        return {
+            name: 'Fibo',
+            data: {
+                0: [
+                    {
+                        xAxis: fibo.time,
+                        yAxis: fibo.fibo_middle,
+                        itemStyle: {
+                            color: "rgba(238,61,61,0.2)", // Пример стиля
+                            borderColor: "black",
+                            borderWidth: 0.1,
+                        }
+                    },
+                    {
+                        xAxis: endTime,
+                        yAxis: fibo.fibo_low,
+                    },
+
+                ],
             },
         };
     });
@@ -127,10 +154,6 @@ export function getLinesData(fractals, categoryData) {
 
 function fincFvgIndexByDate(fvgs, dateStr) {
     return fvgs.findIndex(date => date === dateStr);
-}
-
-function findFiboIndexByDate(fibo, dateStr) {
-    return fibo.findIndex(date => date === dateStr);
 }
 
 function findCandleIndexByDate(categoryData, dateStr) {

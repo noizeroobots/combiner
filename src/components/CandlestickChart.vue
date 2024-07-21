@@ -6,7 +6,7 @@
 import { defineComponent } from "vue";
 import * as echarts from "echarts";
 import {fetchFractals, fetchFvgs, fetchCandles, fetchFibo} from "../api.js";
-import { getMarkPoints, drawFvgAreas, getLinesData, drawFibo } from "../utils/chartData.js";
+import { getMarkPoints, drawFvgAreas, getLinesData, drawFiboPremiumZone, drawFiboDiscoundZone} from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
 import { yAxisConfig } from "../utils/yAxisConfig.js";
@@ -73,11 +73,14 @@ export default defineComponent({
       }
       const chartDom = document.getElementById("candlestick-chart");
       const myChart = echarts.init(chartDom);
+
       const markPoints = getMarkPoints(this.fractals);
-      const markAreas = drawFvgAreas(this.fvgs, this.categoryData);
-      const markAreasFibo = drawFibo(this.fibo);
+      const markAreasFvgZone = drawFvgAreas(this.fvgs, this.categoryData);
+      const markAreaFiboPremiumZone = drawFiboPremiumZone(this.fibo, this.categoryData);
+      const markAreaFiboDiscountZone = drawFiboDiscoundZone(this.fibo, this.categoryData);
       const linesData = getLinesData(this.fractals, this.categoryData);
-      const config = getSeriesConfig15M(this.values, markPoints, markAreas, markAreasFibo, linesData);
+
+      const config = getSeriesConfig15M(this.values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData);
 
       const option = {
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
