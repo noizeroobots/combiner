@@ -152,6 +152,30 @@ export function getLinesData(fractals, categoryData) {
         });
 }
 
+
+export function drawGraphicQmBabyFunction(qm) {
+    console.log("Input QM data: ", qm); // Логируем входные данные
+    return qm.map(f => {
+        return {
+            type: "polygon",
+            shape: {
+                ranges: [
+                    [f.first_time, f.first_extreme],
+                    [f.middle_time, f.middle_extreme],
+                    [f.second_time, f.second_extreme]
+                ]
+            },
+            style: {
+                fill: '#5470c6',
+                stroke: '#a4122d'
+            },
+            lineStyle: {
+                color: "red"
+            },
+        };
+    });
+}
+
 function fincFvgIndexByDate(fvgs, dateStr) {
     return fvgs.findIndex(date => date === dateStr);
 }

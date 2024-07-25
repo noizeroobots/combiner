@@ -1,7 +1,7 @@
 // src/utils/seriesConfig.js
 
 
-export const getSeriesConfig15M = (values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData) => [
+export const getSeriesConfig15M = (values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData, markGraphicQmBaby) => [
     {
         type: "candlestick",
         data: values,
@@ -20,13 +20,15 @@ export const getSeriesConfig15M = (values, markPoints, markAreasFvgZone, markAre
         markArea: {
             silent: false,
             data: [
-                ...markAreasFvgZone.map((area) => area.data[0]),
-                ...markAreaFiboPremiumZone.map((area) => area.data[0]),
-                ...markAreaFiboDiscountZone.map((area) => area.data[0]),
+               // ...markAreasFvgZone.map((area) => area.data[0]),
+                //...markAreaFiboPremiumZone.map((area) => area.data[0]),
+                //...markAreaFiboDiscountZone.map((area) => area.data[0]),
+
             ],
         },
     },
     //...linesData,
+   // ...markGraphicQmBaby,
 ];
 
 export const getSeriesConfig4H = (values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData) => [

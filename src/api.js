@@ -24,7 +24,7 @@ export async function fetchCandles(component, ticker) {
         component.extendXAxisByEmptyCandles(component.categoryData, component.values, 250);
         component.drawChart();
     } catch (error) {
-        console.error("ERROR: Error fetching data...\n\n", error);
+      //  console.error("ERROR: Error fetching data...\n\n", error);
     }
 }
 
@@ -83,7 +83,7 @@ export async function fetchFractals(component, ticker) {
         component.fractals = data;
         component.drawChart();
     } catch (error) {
-        console.error("ERROR: Error fetching fractals...\n\n", error.toString());
+      //  console.error("ERROR: Error fetching fractals...\n\n", error.toString());
     }
 }
 
@@ -98,7 +98,7 @@ export async function fetchFractals4Hour(component, ticker) {
         component.fractals = data;
         component.drawChart();
     } catch (error) {
-        console.error("ERROR: Error fetching fractals...\n\n", error.toString());
+       // console.error("ERROR: Error fetching fractals...\n\n", error.toString());
     }
 }
 
@@ -113,7 +113,7 @@ export async function fetchFvgs(component, ticker) {
         component.fvgs = data;
         component.drawChart();
     } catch (error) {
-        console.log('ERROR: Какая-то ошибка с достованием FVG...\n\n', error);
+       // console.log('ERROR: Какая-то ошибка с достованием FVG...\n\n', error);
     }
 }
 
@@ -129,9 +129,11 @@ export async function fetchFvgs4Hour(component, ticker) {
         component.fvgs = data;
         component.drawChart();
     } catch (error) {
-        console.log('ERROR: Какая-то ошибка с достованием fetchFvgs4Hour...\n\n', error);
+     //   console.log('ERROR: Какая-то ошибка с достованием fetchFvgs4Hour...\n\n', error);
     }
 }
+
+
 export async function fetchFibo(component, ticker) {
     try {
         const response = await fetch(`http://localhost:8089/api/fibo/get-fibo?ticker=${ticker}`);
@@ -143,6 +145,21 @@ export async function fetchFibo(component, ticker) {
         component.fibo = data;
         component.drawChart();
     } catch (error) {
-        console.log('ERROR: Какая-то ошибка с достованием fetchFibo...\n\n', error);
+       // console.log('ERROR: Какая-то ошибка с достованием fetchFibo...\n\n', error);
+    }
+}
+export async function fetchQmBaby(component, ticker) {
+    try {
+        const response = await fetch(`http://localhost:8089/api/qm/get-qm?ticker=${ticker}`);
+        const data = await response.json();
+        console.log("fetchQmBaby data: ", data);
+        if (!Array.isArray(data)) {
+            console.error("Fibo data is not an array");
+            return;
+        }
+        component.qm = data;
+        component.drawChart();
+    } catch (error) {
+        console.log('ERROR: Какая-то ошибка с достованием fetchQmBaby...\n\n', error);
     }
 }

@@ -5,8 +5,15 @@
 <script>
 import { defineComponent } from "vue";
 import * as echarts from "echarts";
-import {fetchFractals, fetchFvgs, fetchCandles, fetchFibo} from "../api.js";
-import { getMarkPoints, drawFvgAreas, getLinesData, drawFiboPremiumZone, drawFiboDiscoundZone} from "../utils/chartData.js";
+import {fetchFractals, fetchFvgs, fetchCandles, fetchFibo, fetchQmBaby} from "../api.js";
+import {
+  getMarkPoints,
+  drawFvgAreas,
+  getLinesData,
+  drawFiboPremiumZone,
+  drawFiboDiscoundZone,
+  drawGraphicQmBabyFunction
+} from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
 import { yAxisConfig } from "../utils/yAxisConfig.js";
@@ -26,6 +33,7 @@ export default defineComponent({
     await fetchFractals(this, this.ticker);
     await fetchFvgs(this, this.ticker);
     await fetchFibo(this, this.ticker);
+    await fetchQmBaby(this, this.ticker);
   },
   watch: {
     ticker: {
@@ -41,8 +49,10 @@ export default defineComponent({
       values: [],
       fractals: [],
       fvgs: [],
+      qm: [],
     };
   },
+
   methods: {
     addHoursToDate(dateStr, hours) {
       const date = new Date(dateStr);
@@ -66,7 +76,9 @@ export default defineComponent({
       await fetchFractals(this, ticker);
       await fetchFvgs(this, ticker);
       await fetchFibo(this, ticker);
+      await fetchQmBaby(this, ticker);
     },
+
     drawChart() {
       if (!this.categoryData.length || !this.values.length) {
         return;
@@ -78,9 +90,12 @@ export default defineComponent({
       const markAreasFvgZone = drawFvgAreas(this.fvgs, this.categoryData);
       const markAreaFiboPremiumZone = drawFiboPremiumZone(this.fibo, this.categoryData);
       const markAreaFiboDiscountZone = drawFiboDiscoundZone(this.fibo, this.categoryData);
+      const markGraphicQmBaby = drawGraphicQmBabyFunction(this.qm);
+      console.log("константа: ", markGraphicQmBaby);
       const linesData = getLinesData(this.fractals, this.categoryData);
 
-      const config = getSeriesConfig15M(this.values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData);
+      const config = getSeriesConfig15M(this.values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData, markGraphicQmBaby);
+
 
       const option = {
         backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -92,8 +107,12 @@ export default defineComponent({
         xAxis: xAxisConfig(this.categoryData),
         yAxis: yAxisConfig(this.values),
         series: config,
+        graphic: {
+          elements: markGraphicQmBaby
+        },
         dataZoom: dataZoomConfig,
       };
+
       myChart.setOption(option);
 
       // Добавим обработчик событий для вертикального масштабирования
