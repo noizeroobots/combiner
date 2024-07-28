@@ -152,9 +152,9 @@ export async function fetchQmBaby(component, ticker) {
     try {
         const response = await fetch(`http://localhost:8089/api/qm/get-qm?ticker=${ticker}`);
         const data = await response.json();
-        console.log("fetchQmBaby data: ", data);
+       // console.log("fetchQmBaby data: ", data);
         if (!Array.isArray(data)) {
-            console.error("Fibo data is not an array");
+            console.error("QM data is not an array");
             return;
         }
         component.qm = data;

@@ -12,7 +12,7 @@ import {
   getLinesData,
   drawFiboPremiumZone,
   drawFiboDiscoundZone,
-  drawGraphicQmBabyFunction
+  drawGraphicQmBabyFunction, getLinesData2, drawShiftArea
 } from "../utils/chartData.js";
 import { toolboxConfig } from "../utils/toolboxConfig.js";
 import { tooltipConfig } from "../utils/tooltipConfig.js";
@@ -90,11 +90,14 @@ export default defineComponent({
       const markAreasFvgZone = drawFvgAreas(this.fvgs, this.categoryData);
       const markAreaFiboPremiumZone = drawFiboPremiumZone(this.fibo, this.categoryData);
       const markAreaFiboDiscountZone = drawFiboDiscoundZone(this.fibo, this.categoryData);
-      const markGraphicQmBaby = drawGraphicQmBabyFunction(this.qm);
-      console.log("константа: ", markGraphicQmBaby);
+      const markGraphicQmBaby = drawGraphicQmBabyFunction(this.qm, this.categoryData);
+      const markQmShiftArea = drawShiftArea(this.qm, this.categoryData)
+      console.log("DEBUG: константа markGraphicQmBaby: ", markGraphicQmBaby);
+      //console.log("this.categoryData: ", this.categoryData);
       const linesData = getLinesData(this.fractals, this.categoryData);
+      const linesData2 = getLinesData2(this.qm, this.categoryData);
 
-      const config = getSeriesConfig15M(this.values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData, markGraphicQmBaby);
+      const config = getSeriesConfig15M(this.values, markPoints, markAreasFvgZone, markAreaFiboPremiumZone, markAreaFiboDiscountZone, linesData,linesData2, markQmShiftArea, markGraphicQmBaby);
 
 
       const option = {

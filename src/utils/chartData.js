@@ -2,7 +2,7 @@ export function getMarkPoints(fractals) {
     return fractals
         .filter(fractal => fractal.logMessage === "Local low" || fractal.logMessage === "Local high")
         .map(fractal => {
-            let offsetPercent = 1; // Процентное смещение от extreme
+            let offsetPercent = 0.5; // Процентное смещение от extreme
 
             // Вычисляем процентное значение от extreme
             let offsetValue = fractal.extreme * (offsetPercent / 100);
@@ -128,7 +128,6 @@ export function getLinesData(fractals, categoryData) {
             const startIndex = findCandleIndexByDate(categoryData, fractal.time);
             const endIndex = startIndex + 30; // Сдвиг на 10 свечей вправо
             const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
-
             return {
                 name: fractal.logMessage,
                 type: "line",
@@ -152,10 +151,69 @@ export function getLinesData(fractals, categoryData) {
         });
 }
 
+export function getLinesData2(qm, categoryData) {
+    return qm
+        .map(f => {
+            const startIndex = findCandleIndexByDate(categoryData, f.second_time);
+            const endIndex = startIndex + 10; // Сдвиг на 10 свечей вправо
+            const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+            return {
+                type: "line",
+                data: [
+                    [f.first_time, f.middle_extreme],
+                    [endTime, f.middle_extreme]
+                ],
+                lineStyle: {
+                    color: "rgba(5,51,236,0.9)",
+                    width: 2,
+                    type: "solid",
+                    opacity: 1
+                },
+                markLine: {
+                    symbol: ['none', 'none'],
+                    label: {
+                        show: false
+                    }
+                }
+            };
+        });
+}
 
-export function drawGraphicQmBabyFunction(qm) {
-    console.log("Input QM data: ", qm); // Логируем входные данные
+export function drawShiftArea(qm, categoryData) {
     return qm.map(f => {
+        const startIndex = findCandleIndexByDate(categoryData, f.first_time);
+        const endIndex = startIndex + 170;
+        const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
+        return {
+            name: 'ShiftArea',
+            data: {
+                0: [
+                    {
+                        xAxis: f.first_time,
+                        yAxis: f.first_extreme,
+                        itemStyle: {
+                            color: "rgba(179,9,217,0.8)", // Пример стиля
+                            borderColor: "black",
+                            borderWidth: 0.1,
+                        }
+                    },
+                    {
+                        xAxis: f.second_time,
+                        yAxis: f.middle_extreme,
+                    },
+
+                ],
+            },
+        };
+    });
+}
+
+
+export function drawGraphicQmBabyFunction(qm, categoryData) {
+    //console.log("Input QM data: ", qm); // Логируем входные данные
+
+    return qm.map(f => {
+        //console.log("2-Input QM data: ", qm); // Логируем входные данные
         return {
             type: "polygon",
             shape: {
