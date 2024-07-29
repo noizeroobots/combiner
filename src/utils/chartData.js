@@ -82,7 +82,7 @@ export function drawFiboPremiumZone(fibo, categoryData) {
                         }
                     },
                     {
-                        xAxis: endTime,
+                        xAxis: fibo.current_candle_time,
                         yAxis: fibo.fibo_middle,
                     },
 
@@ -95,7 +95,7 @@ export function drawFiboPremiumZone(fibo, categoryData) {
 export function drawFiboDiscoundZone(fibo, categoryData) {
     return fibo.map(fibo => {
         const startIndex = findCandleIndexByDate(categoryData, fibo.time);
-        const endIndex = startIndex + 170;
+        const endIndex = startIndex + 10;
         const endTime = endIndex < categoryData.length ? categoryData[endIndex] : categoryData[categoryData.length - 1];
         return {
             name: 'Fibo',
@@ -111,7 +111,7 @@ export function drawFiboDiscoundZone(fibo, categoryData) {
                         }
                     },
                     {
-                        xAxis: endTime,
+                        xAxis: fibo.current_candle_time,
                         yAxis: fibo.fibo_low,
                     },
 
